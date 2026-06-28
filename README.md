@@ -4,7 +4,15 @@
 
 This is a [FastAPI](https://fastapi.tiangolo.com/), [Next.js](https://nextjs.org/) , [React.js](https://nextjs.org/), [PostgreSQL](https://www.postgresql.org/), [Shadcn](https://ui.shadcn.com/), and [Tailwind.css](https://tailwindui.com/) E-commerce application.
 
-## 
+
+
+!\[](img/1.png)
+
+
+
+
+
+
 
 ## Core Features:
 
