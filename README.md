@@ -1,4 +1,4 @@
-!\[](/images/shop.png)
+![](/images/shop.png)
 
 !\[](/images/cart.png)
 
