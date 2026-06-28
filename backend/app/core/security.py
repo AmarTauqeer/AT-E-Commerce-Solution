@@ -1,0 +1,75 @@
+import bcrypt
+from fastapi import Cookie, Depends, HTTPException
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
+
+from passlib.context import CryptContext
+from fastapi.security import APIKeyCookie, OAuth2PasswordBearer
+from datetime import timedelta, datetime
+from jose import jwt, JWSError
+from core.config import get_settings
+
+from starlette.authentication import AuthCredentials, UnauthenticatedUser
+
+
+from core.db import get_db
+settings = get_settings()
+
+# shows lock icon in swagger
+cookie_scheme = APIKeyCookie(
+    name="access_token",
+    auto_error=False
+)
+
+
+def get_password_hash(password: str) -> str:
+    """Hash a password using bcrypt"""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed: str) -> bool:
+    """Verify a password against its hash"""
+    return bcrypt.checkpw(
+        plain_password.encode("utf-8"),
+        hashed.encode("utf-8"),
+    )
+
+
+def create_access_token(data: dict):
+
+    expire = datetime.utcnow() + timedelta(days=7)
+
+    payload = data.copy()
+    payload.update({"exp": expire})
+
+    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+async def create_refresh_token(data):
+    return jwt.encode(data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+async def get_current_user(
+    access_token: str = Depends(cookie_scheme)
+):
+
+    if not access_token:
+        return HTTPException(
+            status_code=401,
+            detail="Not authenticated"
+        )
+
+    try:
+        payload = jwt.decode(
+            access_token,
+            settings.JWT_SECRET,
+            settings.JWT_ALGORITHM
+        )
+
+        return payload
+
+    except JWTError:
+        return HTTPException(
+            status_code=401,
+            detail="Invalid token"
+        )
+
+
