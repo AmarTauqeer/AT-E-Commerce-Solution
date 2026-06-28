@@ -6,19 +6,19 @@ This is a [FastAPI](https://fastapi.tiangolo.com/), [Next.js](https://nextjs.org
 
 
 
-!\[shop](./images/shop.png)
+!\[shop](/images/shop.png)
 
-!\[cart](./images/cart.png)
+!\[cart](/images/cart.png)
 
-!\[product](./images/product.png)
+!\[product](/images/product.png)
 
-!\[report](./images/report.png)
+!\[report](/images/report.png)
 
-!\[doc-1](./images/doc-1.png)
+!\[doc-1](/images/doc-1.png)
 
-!\[doc-2](./images/doc-2.png)
+!\[doc-2](/images/doc-2.png)
 
-!\[doc-3](./images/doc-3.png)
+!\[doc-3](/images/doc-3.png)
 
 
 
