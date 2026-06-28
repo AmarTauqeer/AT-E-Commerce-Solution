@@ -2,6 +2,8 @@
 
 !\[](/images/cart.png)
 
+!\[](/images/dashboard.png)
+
 !\[](/images/product.png)
 
 !\[](/images/report.png)
@@ -11,6 +13,8 @@
 !\[](/images/doc-2.png)
 
 !\[](/images/doc-3.png)
+
+## 
 
 ## A Lightweight E-Commerce Application
 
