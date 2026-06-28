@@ -1,18 +1,18 @@
 ![](/images/shop.png)
 
-!\[](/images/cart.png)
+![](/images/cart.png)
 
-!\[](/images/dashboard.png)
+![](/images/dashboard.png)
 
-!\[](/images/product.png)
+![](/images/product.png)
 
-!\[](/images/report.png)
+![](/images/report.png)
 
-!\[](/images/doc-1.png)
+![](/images/doc-1.png)
 
-!\[](/images/doc-2.png)
+![](/images/doc-2.png)
 
-!\[](/images/doc-3.png)
+![](/images/doc-3.png)
 
 ## 
 
