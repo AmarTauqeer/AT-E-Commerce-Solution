@@ -6,7 +6,7 @@ This is a [FastAPI](https://fastapi.tiangolo.com/), [Next.js](https://nextjs.org
 
 
 
-!\[](img/1.png)
+!\[](./images/1.png)
 
 
 
