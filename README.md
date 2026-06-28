@@ -1,28 +1,22 @@
+!\[](/images/shop.png)
+
+!\[](/images/cart.png)
+
+!\[](/images/product.png)
+
+!\[](/images/report.png)
+
+!\[](/images/doc-1.png)
+
+!\[](/images/doc-2.png)
+
+!\[](/images/doc-3.png)
+
 ## A Lightweight E-Commerce Application
 
 
 
 This is a [FastAPI](https://fastapi.tiangolo.com/), [Next.js](https://nextjs.org/) , [React.js](https://nextjs.org/), [PostgreSQL](https://www.postgresql.org/), [Shadcn](https://ui.shadcn.com/), and [Tailwind.css](https://tailwindui.com/) E-commerce application.
-
-
-
-!\[shop](/images/shop.png)
-
-!\[cart](/images/cart.png)
-
-!\[product](/images/product.png)
-
-!\[report](/images/report.png)
-
-!\[doc-1](/images/doc-1.png)
-
-!\[doc-2](/images/doc-2.png)
-
-!\[doc-3](/images/doc-3.png)
-
-
-
-
 
 
 
