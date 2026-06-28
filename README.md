@@ -1,14 +1,14 @@
-![](/images/shop.png)
+![](/images/shop.png "Shop Page")
 
-![](/images/cart.png)
+![](/images/cart.png "Shopping Cart Page")
 
-![](/images/dashboard.png)
+![](/images/dashboard.png "Admin Dashboard Page")
 
-![](/images/product.png)
+![](/images/product.png "Product Page")
 
-![](/images/report.png)
+![](/images/report.png "Report Between Dates")
 
-![](/images/doc-1.png)
+![](/images/doc-1.png "Swagger Documentation")
 
 ![](/images/doc-2.png)
 
