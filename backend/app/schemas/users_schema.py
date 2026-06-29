@@ -23,3 +23,6 @@ class SignInRequestSchema(BaseModel):
     username: str
     password: str
     role_id: int
+
+class ForgotPassword(BaseModel):
+    email: EmailStr

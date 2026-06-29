@@ -109,8 +109,9 @@ const UserLogin = () => {
                                         {loading && <><Loader2Icon className="animate-spin" /> Please wait</>}
                                         {!loading && <p>Submit</p>}
                                     </Button>
-                                    <div className="text-center mt-2 w-full">
-                                        Don't have an account? <Link href="/register" className="mouse-pointer text-sm">{" "}Register</Link>
+                                    <div className="mt-2 w-full flex md:flex-row justify-between gap-1 items-center">
+                                        <Link href="forgot-password">Forgot Password</Link>
+                                        <div>Don't have an account? <Link href="/register" className="mouse-pointer text-sm">{" "}Register</Link></div>
                                     </div>
                                 </form>
                             </Form>

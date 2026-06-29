@@ -1,13 +1,15 @@
+from api.helper.send_email import send_reset_email
 from fastapi.security import APIKeyCookie
 from pydantic import BaseModel, EmailStr
 
 from api.otp import send_otp_email, verify_otp
 from core.config import get_settings
 from fastapi import APIRouter, Depends, Response, HTTPException, Cookie
-from schemas.auth_schema import LoginSchema
+from schemas.auth_schema import LoginSchema, ResetPassword
 from core.security import create_access_token, get_current_user, get_password_hash, verify_password
 from jose import jwt, JWTError
 
+from schemas.users_schema import ForgotPassword
 from sqlalchemy.orm import Session
 from core.db import get_db
 from api.models.models import User
@@ -197,3 +199,73 @@ def verify(data: OTPVerifyRequest, response: Response):
     )
 
     return {"message": "Logged in"}
+
+@router.post("/forgot-password")
+async def forgot_password(
+    data: ForgotPassword,
+    db: Session = Depends(get_db)
+):
+
+    user = db.query(User).filter(User.email == data.email).first()
+
+    # Prevent email enumeration
+    if not user:
+        return {
+            "message": "If an account exists, a reset link has been sent."
+        }
+
+    token = create_access_token({
+        "sub": data.email
+    })
+
+    await send_reset_email(data.email)
+
+    return {
+        "message": "If an account exists, a reset link has been sent."
+    }
+
+@router.post("/reset-password")
+async def reset_password(
+    data: ResetPassword,
+    db: Session = Depends(get_db)
+):
+    
+
+    try:
+
+        payload = jwt.decode(
+            data.token,
+            settings.JWT_SECRET,
+            settings.JWT_ALGORITHM
+        )
+
+        email = payload["sub"]
+
+    except jwt.PyJWTError:
+
+        return HTTPException(
+            400,
+            "Invalid token"
+        )
+
+
+    user = (
+        db.query(User)
+        .filter(
+            User.email == email
+        )
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            404,
+            "User not found"
+        )
+    hashed_password = get_password_hash(data.password)
+    user.password = hashed_password
+    db.commit()
+
+    return {
+        "message": "Password updated successfully."
+    }

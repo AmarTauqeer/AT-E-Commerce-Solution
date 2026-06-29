@@ -7,9 +7,9 @@ from sqlmodel import select
 from api.helper.user_helper import create_user_account
 from api.helper.user_response import UserResponse
 from core.config import get_settings
-from fastapi import APIRouter, Depends, Response, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from core.security import get_current_user, get_password_hash
-from schemas.users_schema import UserUpdateSchema, CreateUserRequest
+from schemas.users_schema import ForgotPassword, UserUpdateSchema, CreateUserRequest
 from starlette import status
 
 from sqlalchemy.orm import Session
@@ -220,3 +220,4 @@ def update_test_user(update_user: UserUpdateSchema, id: int, db: Session = Depen
             'role': {'id': user.role.id, 'role_name': user.role.role_name}
         }
     return user_role
+
