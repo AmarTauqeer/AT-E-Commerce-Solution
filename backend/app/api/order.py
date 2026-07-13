@@ -53,13 +53,17 @@ async def get_one_order(id:int ,db:Session = Depends(get_db)):
 async def delete_order(id:int, db:Session = Depends(get_db)):
 
     deleted_order = db.get(Order, id)
-    print(delete_order)
+    # print(delete_order)
 
     if not deleted_order:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"The id: {id} you requested for does not exist")
     db.delete(deleted_order)
     db.commit()
+    return {
+        'status_code':204,
+        'message': "successfully deleted"
+    }
 
 
 @router.patch('/{id}', response_model=UpdateOrderSchema)

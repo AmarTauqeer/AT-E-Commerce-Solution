@@ -15,7 +15,7 @@ export async function createOrder(data: any) {
     const currentUser = await getUser()
     const email = await currentUser.sub
     const users = await getUsers()
-    const filterUsers = users.filter((u:any)=>u.email==email)
+    const filterUsers = users.filter((u: any) => u.email == email)
     const userId = filterUsers[0].id
 
     // order
@@ -26,11 +26,16 @@ export async function createOrder(data: any) {
         order_status: "Created"
     }
     const postOrder = async () => {
-        const response = await api.post("/order/", orderData);
-        return await response.data[0]
+
+        try {
+            const response = await api.post("/order/", orderData);
+            return await response.data[0]
+        } catch (error: any) {
+            return await error.response.data
+        }
     }
 
-    const response:{id:number} = await postOrder()
+    const response: { id: number } = await postOrder()
     orderId = response.id
 
     if (orderId > 0) {
@@ -44,8 +49,13 @@ export async function createOrder(data: any) {
             }
 
             const createOrderItems = async () => {
-                const response = await api.post("/orderItems/", orderItem);
-                console.log(await response.data[0])
+
+                try {
+                    const response = await api.post("/orderItems/", orderItem);
+                    return await response.data[0]
+                } catch (error: any) {
+                    return await error.response.data
+                }
             }
             createOrderItems()
         });

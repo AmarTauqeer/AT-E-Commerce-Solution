@@ -157,6 +157,10 @@ def delete_user(id: int, db: Session = Depends(get_db)):
                             detail=f"The id: {id} you requested for does not exist")
     deleted_user.delete(synchronize_session=False)
     db.commit()
+    return {
+        'status_code':204,
+        'message': "successfully deleted"
+    }
 
 
 # update
@@ -170,7 +174,7 @@ def update_test_user(update_user: UserUpdateSchema, id: int, db: Session = Depen
     update_user.password = get_password_hash(update_user.password)
 
     if updated_user.first() is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"The id:{id} does not exist")
     
     updated_user.update(update_user.dict(), synchronize_session=False)

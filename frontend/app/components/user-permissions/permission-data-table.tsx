@@ -42,6 +42,7 @@ import { getResources } from "@/app/services/resource"
 import { DataTablePagination } from "../data-table-pagination"
 import { PermissionsAddOrUpdateDialog } from "./permission-add-update-dialog"
 import { DeletePermissionDialog } from "./delete-permission-dialog"
+import { getPermission } from "@/app/services/user-permissions"
 
 
 
@@ -74,7 +75,7 @@ export type currentUserType = {
 }
 
 
-export const PermissionsDataTable = (props: ResponseDataType) => {
+export const PermissionsDataTable = (props: any) => {
 
     const columns: ColumnDef<userPermissionType>[] = [
         {
@@ -245,7 +246,8 @@ export const PermissionsDataTable = (props: ResponseDataType) => {
         },
     ]
 
-    const response = props.response
+    // const response = props.response
+    const[response, setResponse]= React.useState<{}[]>([])
     const [newResponse, setNewResponse] = React.useState([])
     const [isOpen, setIsOpen] = React.useState(false)
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -259,8 +261,10 @@ export const PermissionsDataTable = (props: ResponseDataType) => {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
-    // const data: userPermissionType[] = response;
+  
+    
     const data: userPermissionType[] = newResponse;
+
     const [role, setRole] = React.useState("user")
     const router = useRouter()
     const [id, setId] = React.useState(1)
@@ -304,12 +308,16 @@ export const PermissionsDataTable = (props: ResponseDataType) => {
 
             const filterUsers = await getData.user
             if (filterUsers.email) {
+
                 let role_name = filterUsers.role.role_name
                 setRole(role_name)
                 setRoleId(filterUsers.role.id)
+
                 const userId = filterUsers.id
                 setId(userId)
+
                 const filterPermission = await getData.permissions
+
                 //  for profile resource id =5
                 const permissionsDb = filterPermission.filter((p: any) => p.resource == 5)
                 setPermissions(permissionsDb)
@@ -318,14 +326,16 @@ export const PermissionsDataTable = (props: ResponseDataType) => {
                     toast.error(<span className="text-red-500">You don't have permission to access this page!</span>)
                     router.replace("/admin-login");
                 }
+
                 const resourceData = await getResources()
-                // setResourceData(await respJson)
 
                 const usersResponseJson = await getUsers();
                 setUserData(usersResponseJson)
 
                 // get response data
-                const permissionResponse = props.response;
+                const permissionResponse = await getPermission();
+                setResponse(permissionResponse)
+
                 let arr:any = []
                 for (let i = 0; i < permissionResponse.length; i++) {
                     const element = permissionResponse[i];
@@ -371,7 +381,7 @@ export const PermissionsDataTable = (props: ResponseDataType) => {
                     />
                     <div className="w-full">
                         <PermissionsAddOrUpdateDialog data={{
-                            id: "0", resource: undefined, user: response.length > 0 ? response[0].user : undefined,
+                            id: "0", resource: undefined, user:  undefined,
                             Read: undefined, Write: undefined, Update: undefined, Delete: undefined, created_at: undefined
                         }} />
 

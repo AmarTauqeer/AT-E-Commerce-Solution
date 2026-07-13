@@ -13,7 +13,7 @@ import {
     useReactTable,
     VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Euro, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -36,8 +36,11 @@ import { redirect, useRouter } from "next/navigation"
 import { DataTablePagination } from "../data-table-pagination"
 import { DeleteOrderDialog } from "./order-delete-dialog"
 import { OrderAddOrUpdateDialog } from "./order-add-update-dialog"
-import { getUserAndPermissions, loggedIn } from "@/app/services/auth"
+import { getUserAndPermissions, getUsers, loggedIn } from "@/app/services/auth"
 import { FaFilePdf } from "react-icons/fa6"
+import { getOrders } from "@/app/services/order"
+import { getProducts } from "@/app/services/product"
+import { getOrderItems } from "@/app/services/order-items"
 
 
 
@@ -65,10 +68,10 @@ export type permissionType = {
 
 
 
-export const CustomerOrderDataTable = (props: ResponseDataType) => {
+export const CustomerOrderDataTable = (props: any) => {
 
-        async function handleclick(id:number){
-            router.push(`reports/order?id=${id}`)
+    async function handleclick(id: number) {
+        router.push(`reports/order?id=${id}`)
     }
 
 
@@ -110,11 +113,11 @@ export const CustomerOrderDataTable = (props: ResponseDataType) => {
                     </Button>
                 )
             },
-            cell: ({ row }) =>  <div className={row.getValue("order_status") == 'Created' && row.getValue("order_status")!='Delivered'?
-                        "w-30 flex items-center justify-center text-sm font-semibold text-white py-1 rounded-lg bg-yellow-500" :row.getValue("order_status")=='Pending'?
-                        "w-30 flex items-center justify-center text-sm font-semibold text-white py-1 rounded-lg bg-orange-500":
-                        "w-30 flex items-center justify-center text-sm font-semibold text-white py-1 rounded-lg bg-green-600"}>
-                        {row.getValue("order_status")}</div>,
+            cell: ({ row }) => <div className={row.getValue("order_status") == 'Created' && row.getValue("order_status") != 'Delivered' ?
+                "w-30 flex items-center justify-center text-sm font-semibold text-white py-1 rounded-lg bg-yellow-500" : row.getValue("order_status") == 'Pending' ?
+                    "w-30 flex items-center justify-center text-sm font-semibold text-white py-1 rounded-lg bg-orange-500" :
+                    "w-30 flex items-center justify-center text-sm font-semibold text-white py-1 rounded-lg bg-green-600"}>
+                {row.getValue("order_status")}</div>,
         },
         {
             accessorKey: "order_amount",
@@ -129,7 +132,7 @@ export const CustomerOrderDataTable = (props: ResponseDataType) => {
                     </Button>
                 )
             },
-            cell: ({ row }) => <div className="lowercase text-end font-semibold">{parseInt(row.getValue("order_amount")).toFixed(2)}</div>,
+            cell: ({ row }) => <div className="flex flex-row items-center lowercase justify-end font-semibold"><Euro size={15} />{parseInt(row.getValue("order_amount")).toFixed(2)}</div>,
         },
         {
             accessorKey: "created_at",
@@ -166,17 +169,29 @@ export const CustomerOrderDataTable = (props: ResponseDataType) => {
                         {permissions !== undefined ? permissions.Delete && permissions.resource == 6 ?
                             <DeleteOrderDialog id={order.id} />
                             : "" : ""}
-                             <Button type="button" size="icon" variant="outline" className="text-blue-900" onClick={(e)=>handleclick(parseInt(order.id))}><FaFilePdf /></Button>
+                        <Button type="button" size="icon" variant="outline" className="text-blue-900" onClick={(e) => handleclick(parseInt(order.id))}><FaFilePdf /></Button>
 
                     </div>
                 )
             },
         },
     ]
-    const response = props.response.response
-    const users = props.response.users
-    const products = props.response.products
-    const orderItems = props.response.orderItems
+    // const response = props.response.response
+    // const users = props.response.users
+    // const products = props.response.products
+    // const orderItems = props.response.orderItems
+
+    // let users:any=[{}]
+    // let products:any=[{}]
+    // let orderItems:any =[{}]
+    const [newResponse, setNewResponse] = React.useState<orderType[]>([])
+    const [users, setUsers] = React.useState<{}[]>([]);
+     const [products, setProducts] = React.useState<{}[]>([]);
+      const [orderItems, setOrderItems] = React.useState<{}[]>([]);
+    // const[products, setProducts] =React.useState([{}])
+    // const[orderItems, setOrderItems] =React.useState([{}])
+
+
     const router = useRouter()
     const [isOpen, setIsOpen] = React.useState(false)
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -188,7 +203,7 @@ export const CustomerOrderDataTable = (props: ResponseDataType) => {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
-    const data: orderType[] = response;
+    const data: orderType[] = newResponse;
     const table = useReactTable({
         data,
         columns,
@@ -223,6 +238,62 @@ export const CustomerOrderDataTable = (props: ResponseDataType) => {
         getLoginStatus()
 
         const getUserRole = async () => {
+            //get all data
+
+            const responseOrder = await getOrders();
+            const usersData = await getUsers()
+            const productsData = await getProducts()
+            const lineItems = await getOrderItems()
+            let orderItemsData: any = []
+
+            lineItems.forEach((element: any) => {
+                const data = {
+                    order_id: element.order_id,
+                    id: element.id,
+                    product_id: element.product_id.toString(),
+                    quantity: element.quantity.toString(),
+                    purchase_price: element.purchase_price.toString(),
+                    amount_per_product: parseInt(element.quantity) * parseInt(element.purchase_price)
+                }
+                orderItemsData.push(data)
+            });
+            let response = [];
+            if (responseOrder.length > 0 && usersData.length > 0) {
+                for (let i = 0; i < responseOrder.length; i++) {
+                    const element = responseOrder[i];
+                    console.log(element)
+                    const filterUser = usersData.filter((u: any) => u.id == element.user_id)
+                    const email = filterUser[0].email;
+                    const newOrder = {
+                        id: element.id,
+                        user_id: element.user_id,
+                        email: email,
+                        order_status: element.order_status,
+                        order_amount: element.order_amount,
+                        created_at: element.created_at,
+                        updated_at: element.updated_at,
+                    }
+                    response.push(newOrder)
+                }
+            }
+            setNewResponse(response)
+            // users = usersData
+            // products = productsData
+            // orderItems = orderItemsData
+            // console.log(products)
+            // console.log(orderItems)
+            // console.log(users)
+
+            setUsers(usersData)
+            setProducts(productsData)
+            setOrderItems(orderItemsData)
+
+            // const data = {
+            //     response: response,
+            //     users: users,
+            //     products: products,
+            //     orderItems: orderItems
+            // }
             const getData = await getUserAndPermissions()
 
             const filterUsers = await getData.user
@@ -246,6 +317,7 @@ export const CustomerOrderDataTable = (props: ResponseDataType) => {
 
     return (
         <>
+        {console.log(users)}
             {role && role == 'user' ? "" : <div className="w-full">
                 <div className="flex flex-col items-center py-4 md:flex-row">
                     <Input
@@ -256,15 +328,16 @@ export const CustomerOrderDataTable = (props: ResponseDataType) => {
                         }
                         className="max-w-sm mr-2"
                     />
-                   
+
                     <div className="w-full">
                         
-                        {permissions !== undefined && permissions.Write && permissions.resource == 6 &&
+
+                        {permissions !== undefined && permissions.Write && permissions.resource == 6 && users.length>0 && products.length>0 && orderItems.length>0 &&
                             <OrderAddOrUpdateDialog data={{
                                 id: "0", user_id: undefined, email: undefined,
                                 order_status: undefined, order_amount: undefined, users: users, products: products, orderItems: orderItems
                             }} />
-                            }
+                        }
 
                     </div>
                     <DropdownMenu>

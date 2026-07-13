@@ -23,14 +23,15 @@ export type receiveDataType = {
         order_amount: number | undefined,
         order_status: string | undefined
         created_at?:Date,
-        users:[{}],
-        products:[{}],
-        orderItems:[{}],
+        users:{}[],
+        products:{}[],
+        orderItems:{}[],
     }
 }
 
 export function OrderAddOrUpdateDialog({ data }: receiveDataType) {
     const router = useRouter()
+    console.log(data)
     let { id, user_id, email, order_status, order_amount, created_at, users, products, orderItems } = data;
 
     const [isOpen, setIsOpen] = useState(false);

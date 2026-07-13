@@ -45,6 +45,7 @@ import { ProductAddOrUpdateDialog } from "./product-add-update-dialog"
 import { getUser, getUserAndPermissions, getUsers, loggedIn } from "@/app/services/auth"
 import { getPermission } from "@/app/services/user-permissions"
 import { FaFilePdf } from "react-icons/fa6"
+import { getProducts } from "@/app/services/product"
 // import { GetData } from "@/helper/getdata"
 // import { GetUser } from "@/helper/getuser"
 
@@ -77,7 +78,7 @@ export type currentUserType = {
 }
 
 
-export const ProductDataTable = (props: ResponseDataType) => {
+export const ProductDataTable = (props: any) => {
 
     const columns: ColumnDef<productType>[] = [
         {
@@ -292,7 +293,8 @@ export const ProductDataTable = (props: ResponseDataType) => {
                 // console.log(category_data)
 
                 // get response data
-                const productResponse = props.response;
+                const response = await getProducts();
+                const productResponse = response;
                 let arr = []
                 for (let i = 0; i < productResponse.length; i++) {
                     const element = productResponse[i];

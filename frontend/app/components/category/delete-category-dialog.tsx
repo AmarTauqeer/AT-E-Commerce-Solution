@@ -37,7 +37,7 @@ export function DeleteCategoryDialog(id: typeId) {
     const response = await categoryDelete({ 'id': id })
     console.log(response)
 
-    if (response.status_code==204) {
+    if (response=="successfully deleted") {
       setLoading(false)
       router.push("/category")
     } else {

@@ -43,9 +43,9 @@ export type AddOrUpdate = {
         order_status: string | undefined,
         order_amount: number | undefined,
         created_at?: Date,
-        users: [{}],
-        products: [{}],
-        orderItems: [{}]
+        users: {}[],
+        products: {}[],
+        orderItems: {}[]
     },
     setIsOpen: Dispatch<SetStateAction<boolean>>
 }
@@ -62,6 +62,8 @@ const OrderAddEditForm = (props: AddOrUpdate) => {
     const router = useRouter();
     let users = props.data.users
     let products = props.data.products
+    console.log(products)
+
     let tempData: any;
     if (props.data.id !== undefined) {
         let id = props.data.id
@@ -155,7 +157,7 @@ const OrderAddEditForm = (props: AddOrUpdate) => {
         // add or update
         const response = await orderAddOrUpdateFormData(formData)
         // console.log(response)
-        if (response.id) {
+        if (response.id!=undefined) {
             // adding lineitems
             let orderIdDb = response.id;
 
@@ -172,7 +174,7 @@ const OrderAddEditForm = (props: AddOrUpdate) => {
                     for (const r of result) {
                         // console.log(r.id)
                         const responseDelete = await deleteOrderItems(r.id)
-                        // console.log(responseDelete)
+                        console.log(responseDelete)
                     }
                 }
                 deleteItems()
@@ -276,6 +278,7 @@ const OrderAddEditForm = (props: AddOrUpdate) => {
 
     useEffect(() => {
         let recData = props.data
+        console.log(recData)
 
         if (recData) {
             let userId = "2", id = "0", order_status = "Created", order_amount = 1;

@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { getCategories } from "@/app/services/category";
 import { CategoryDataTable } from "@/components/category/category-data-table";
 
 
@@ -17,8 +16,8 @@ const Category = async () => {
 };
 
 async function SuspendedData() {
-    const response = await getCategories();
-    return <CategoryDataTable response={response} />
+   
+    return <CategoryDataTable />
 }
 
 export default Category;

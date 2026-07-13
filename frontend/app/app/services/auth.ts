@@ -10,29 +10,49 @@ export async function loginUser(data: {
 }
 
 export async function getUser() {
-  const response = await api.get("/auth/me");
-  return await response.data
+  try {
+    const response = await api.get("/auth/me");
+    return await response.data
+  } catch (error: any) {
+    return await error.response.data
+  }
 }
 
 export async function getUsers() {
-  const response = await api.get("/user/");
-  return await response.data
+
+  try {
+    const response = await api.get("/user/");
+    return await response.data
+  } catch (error: any) {
+    return await error.response.data
+  }
 }
-export async function getUserById(id:number) {
-  const response = await api.get("/user/" + id);
-  return await response.data
+
+export async function getUserById(id: number) {
+
+  try {
+    const response = await api.get("/user/" + id);
+    return await response.data
+  } catch (error: any) {
+    return await error.response.data
+  }
 }
 
 
 export async function logout() {
-  const response = await api.post("/auth/logout");
-  return response.data;
+
+  try {
+    const response = await api.post("/auth/logout");
+    return await response.data
+  } catch (error: any) {
+    return await error.response.data
+  }
 }
 
 export const loggedIn = async () => {
   const user = await getUser()
   let loginStatus = "loggedin"
-  if (user.status_code != 401) {
+  if (!user.detail) {
     loginStatus = "loggedin"
   } else {
     loginStatus = "loggedout"
@@ -44,16 +64,26 @@ export async function userAddOrUpdateFormData(data: any) {
   const id = data.id
 
   if (id == 0) {
-    const response = await api.post("/user", data);
-    return await response.data
+
+    try {
+      const response = await api.post("/user", data);
+      return await response.data
+    } catch (error: any) {
+      return await error.response.data
+    }
   } else {
-    const response = await api.patch("/user/update/" + id, data);
-    return await response.data
+
+    try {
+      const response = await api.patch("/user/update/" + id, data);
+      return await response.data
+    } catch (error: any) {
+      return await error.response.data
+    }
   }
 
 }
 
-export async function getUserAndPermissions(){
+export async function getUserAndPermissions() {
   const currentUser = await getUser()
   const users = await getUsers()
   const filterUsers = users.filter((u: any) => u.email == currentUser.sub)
@@ -66,12 +96,12 @@ export async function getUserAndPermissions(){
       'permissions': filterPermission
     }
     return data
-  }else{
-    const data={
-     'user':{},
-     'permissions':[]
+  } else {
+    const data = {
+      'user': {},
+      'permissions': []
     }
     return data
   }
- 
+
 }

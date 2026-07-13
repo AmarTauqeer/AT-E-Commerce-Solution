@@ -72,7 +72,7 @@ async def get_order_items(orderId:int ,db:Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"The id: {orderId} you requested for does not exist")
     return results
 
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{id}')
 async def delete_order_items(id:int, db:Session = Depends(get_db)):
 
     deleted_orderItems = db.get(OrderItems, id)
@@ -82,3 +82,7 @@ async def delete_order_items(id:int, db:Session = Depends(get_db)):
                             detail=f"The id: {id} you requested for does not exist")
     db.delete(deleted_orderItems)
     db.commit()
+    return {
+        'status_code':204,
+        'message': "successfully deleted"
+    }

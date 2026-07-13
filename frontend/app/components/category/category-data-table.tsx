@@ -69,7 +69,7 @@ export type currentUserType = {
 }
 
 
-export const CategoryDataTable = (props: ResponseDataType) => {
+export const CategoryDataTable = (props:any) => {
 
     const columns: ColumnDef<categoryType>[] = [
         {
@@ -130,9 +130,10 @@ export const CategoryDataTable = (props: ResponseDataType) => {
         },
     ]
 
-    const response = props.response
+    // const response = props.response
     // console.log(response)
     const [newResponse, setNewResponse] = React.useState<categoryType[]>([])
+    const [categories, setCategories] = React.useState<categoryType[]>([])
     const [isOpen, setIsOpen] = React.useState(false)
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [resourceData, setResourceData] = React.useState([])
@@ -203,7 +204,11 @@ export const CategoryDataTable = (props: ResponseDataType) => {
                 const permissionsDb = filterPermission.filter((p: any) => p.resource == 5)
                 setPermissions(permissionsDb)
                 // get response data
-                const categoryResponse = props.response;
+                const response = await getCategories();
+                const categoryResponse = response;
+                // console.log(response)
+                // console.log(categoryResponse)
+
                 let arr = []
                 for (let i = 0; i < categoryResponse.length; i++) {
                     const element = categoryResponse[i];

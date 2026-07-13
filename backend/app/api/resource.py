@@ -42,7 +42,7 @@ async def get_one_resource(id:int ,db:Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"The id: {id} you requested for does not exist")
     return resource
 
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{id}')
 async def delete_test_resource(id:int, db:Session = Depends(get_db)):
 
     deleted_resource = db.get(Resource, id)
@@ -52,6 +52,10 @@ async def delete_test_resource(id:int, db:Session = Depends(get_db)):
                             detail=f"The id: {id} you requested for does not exist")
     db.delete(deleted_resource)
     db.commit()
+    return {
+        'status_code':204,
+        'message': "successfully deleted"
+    }
 
 
 @router.patch('/{id}', response_model=CreateResourceSchema)

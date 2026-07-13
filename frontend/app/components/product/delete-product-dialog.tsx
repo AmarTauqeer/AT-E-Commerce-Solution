@@ -35,9 +35,8 @@ export function DeleteProductDialog(id: typeId) {
   const handleDelete = async (id: typeId) => {
     setLoading(true);
     const response = await productDelete({ 'id': id })
-    console.log(response)
 
-    if (response.status_code==204) {
+    if (response=="successfully deleted") {
       setLoading(false)
       router.push("/product")
     } else {

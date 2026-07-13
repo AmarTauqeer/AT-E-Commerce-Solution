@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { getPermission } from "@/app/services/user-permissions";
 import { PermissionsDataTable } from "@/components/user-permissions/permission-data-table";
 
 const Permissions = async () => {
@@ -17,8 +16,7 @@ const Permissions = async () => {
 };
 
 async function SuspendedData() {
-    const response = await getPermission();
-    return <PermissionsDataTable response={response} />
+    return <PermissionsDataTable  />
 }
 
 

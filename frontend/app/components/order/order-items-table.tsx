@@ -33,6 +33,7 @@ const OrderItemsTable = ({ onDataUpdate, getProductsData, getOrderItemsData }: E
 
     const[selectedProduct, setSelectedProduct] = useState("1")
 
+    console.log(productData)
 
     let purchase_price_str = (productData[0].sale_price).toString()
     let product_id = (productData[0].id).toString()

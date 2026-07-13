@@ -1,11 +1,12 @@
 'use client'
 
+import { loggedIn } from "@/app/services/auth"
 import { addToCart } from "@/app/store/cart"
 import { Button } from "@/components/ui/button"
 import { Euro } from "lucide-react"
 import Image from "next/image"
-import { useSearchParams } from 'next/navigation'
-import { useState } from "react"
+import { redirect, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 
 function cn(...classes: string[]) {
@@ -51,6 +52,18 @@ const ProductDetail = () => {
             localStorage.setItem('products', JSON.stringify([productData]))
         }
     }
+
+    useEffect(() => {
+        const currentUser = async () => {
+            const loginStatus = await loggedIn()
+            if (loginStatus == "loggedout") {
+                redirect("/user-login")
+            }
+        }
+        currentUser()
+
+    }, [useDispatch, searchParams])
+
 
     return (
         <>

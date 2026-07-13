@@ -12,11 +12,10 @@ from sqlalchemy.orm import Session
 from core.db import get_db
 from api.models.models import Role
 
-router = APIRouter(tags=["User Role"],
-                   dependencies=[Depends(get_current_user)])
-
 settings = get_settings()
 
+router = APIRouter(tags=["User Role"],
+                   dependencies=[Depends(get_current_user)])
 
 
 @router.get('/', response_model=List[RoleSchema])
@@ -40,7 +39,7 @@ async def get_one_role(id:int ,db:Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"The id: {id} you requested for does not exist")
     return role
 
-@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{id}')
 async def delete_one_role(id:int, db:Session = Depends(get_db)):
 
     deleted_role = db.get(Role, id)
@@ -50,6 +49,10 @@ async def delete_one_role(id:int, db:Session = Depends(get_db)):
                             detail=f"The id: {id} you requested for does not exist")
     db.delete(deleted_role)
     db.commit()
+    return {
+        'status_code':204,
+        'message': "successfully deleted"
+    }
 
 
 @router.patch('/{id}', response_model=CreateRoleSchema)

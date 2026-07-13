@@ -69,9 +69,9 @@ const CategoryAddEditForm = (props: AddOrUpdate) => {
         }
 
         const response = await categoryAddOrUpdateFormData(postData)
-        console.log(response)
+        // console.log(response)
 
-        if (response != 405 && response.category_name != undefined) {
+        if (response.category_name != undefined) {
             router.replace("/category")
             setLoading(false)
             props.setIsOpen(false);

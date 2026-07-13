@@ -9,7 +9,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Badge } from '../ui/badge'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
 import { Input } from '../ui/input'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '@/app/store/cart'
 import { RootState, store } from '@/app/store'
@@ -124,6 +124,10 @@ const ShopComponent: FC = () => {
             const categoryData = getCategoriesData()
             const productData = getProductsData()
             const [categoriesResponse, productsResponse] = await Promise.all([categoryData, productData])
+           
+            if (productsResponse.detail=='Not authenticated') {
+                redirect("/user-login")
+            }
             if (categoriesResponse) {
                 setCategories(categoriesResponse)
             }
@@ -132,6 +136,7 @@ const ShopComponent: FC = () => {
             }
         }
         getData()
+        
 
     }, [dispatch, search])
 

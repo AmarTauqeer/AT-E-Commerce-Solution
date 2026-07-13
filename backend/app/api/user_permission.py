@@ -55,12 +55,14 @@ async def delete_test_user_permission(id:int, db:Session = Depends(get_db)):
     deleted_user_permission = db.get(UserPermission, id)
 
     if not deleted_user_permission:
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"The id: {id} you requested for does not exist")
     db.delete(deleted_user_permission)
     db.commit()
-    return HTTPException(status_code=204,
-                            detail=f"successfully deleted")
+    return {
+        'status_code':204,
+        'message': "successfully deleted"
+    }
 
 
 @router.patch('/{id}', response_model=CreateUserPermissionSchema)

@@ -9,10 +9,7 @@ import Providers from "@/components/providers";
 import ReduxProvider from "@/components/redux-provider";
 import { ThemeProvider } from "next-themes";
 import MainHeader from "@/components/main-header";
-// import ReduxProvider from "@/components/reduxProvider";
-// import Providers from "./providers";
-// import { Providers } from "./providers";
-
+import Consent from "@/components/cookie";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,7 +50,10 @@ export default async function AuthLayout({
                   <div className="flex justify-center items-center">
                     <MainHeader />
                   </div>
-                  <div className="min-h-[75vh] mt-11 p-2 mx-auto md:max-w-5xl lg:max-w-6xl xl:max-w-7xl">{children}</div>
+                  <div className="min-h-[75vh] mt-11 p-2 mx-auto md:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
+                    {children}
+                    <Consent />
+                    </div>
                   <Footer />
                 </div>
                 <Toaster />

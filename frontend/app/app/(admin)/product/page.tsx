@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { getProducts } from "@/app/services/product";
 import { ProductDataTable } from "@/components/product/product-data-table";
 
 
@@ -17,8 +16,7 @@ const Product = async () => {
 };
 
 async function SuspendedData() {
-    const response = await getProducts();
-    return <ProductDataTable response={response} />
+    return <ProductDataTable />
 }
 
 export default Product;

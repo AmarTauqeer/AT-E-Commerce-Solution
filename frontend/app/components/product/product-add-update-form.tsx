@@ -95,7 +95,7 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
         }
 
         const formObj = new FormData()
-        console.log(data.file_upload)
+        // console.log(data.file_upload)
         if (data.file_upload) {
             formObj.append('file_upload', data.file_upload)
 
@@ -107,9 +107,8 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
         formObj.append('sale_price', data.sale_rate)
 
         const response = await productAddOrUpdateFormData(formObj)
-        console.log(response)
 
-        if (response != 405 && response.category_id != undefined) {
+        if (response.category_id != undefined) {
             router.replace("/product")
             setLoading(false)
             props.setIsOpen(false);

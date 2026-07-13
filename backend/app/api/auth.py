@@ -7,17 +7,17 @@ from core.config import get_settings
 from fastapi import APIRouter, Depends, Response, HTTPException, Cookie
 from schemas.auth_schema import LoginSchema, ResetPassword
 from core.security import create_access_token, get_current_user, get_password_hash, verify_password
-from jose import jwt, JWTError
+from jose import jwt
 
 from schemas.users_schema import ForgotPassword
 from sqlalchemy.orm import Session
 from core.db import get_db
 from api.models.models import User
 
-router = APIRouter(tags=["Authentication & Authorization"])
 
 settings = get_settings()
 
+router = APIRouter(tags=["Authentication & Authorization"])
 
 @router.post("/signin")
 async def login(data: LoginSchema, response: Response, db: Session = Depends(get_db)):
@@ -269,3 +269,29 @@ async def reset_password(
     return {
         "message": "Password updated successfully."
     }
+
+@router.post("/consent")
+def save_consent(choice: str, response: Response):
+
+    response.set_cookie(
+        key="cookie_consent",
+        value=choice,      # accepted / rejected
+        httponly=True,
+        secure=False,      # True in production HTTPS
+        samesite="lax",
+        max_age=60*60*24*365
+    )
+
+    return {
+        "message": "Consent saved",
+        "choice": choice
+    }
+
+
+@router.get("/consent")
+def get_consent(cookie_consent: str | None = Cookie(default=None)):
+
+    return {
+        "consent": cookie_consent
+    }
+

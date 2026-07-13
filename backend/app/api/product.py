@@ -96,7 +96,7 @@ async def update_product(product_name:str=Form(...),
     
     if(image_path!=None):
         file_name = image_path[45:]
-        print(f"{file_name} from db and file name from upload= {file_upload.filename}")
+        # print(f"{file_name} from db and file name from upload= {file_upload.filename}")
         rootDir ="static/uploads/product"
         for relPath,dir, files in os.walk(rootDir):
             fullPath = os.path.join(relPath, file_name)
@@ -114,10 +114,6 @@ async def update_product(product_name:str=Form(...),
                 f.write(data)
             image_path_for_update = f"{HOST}/static/uploads/product/{unique_name}"
 
-
-               
-
-    
     updated_product.category_id=category_id,
     updated_product.product_name=product_name,
     updated_product.product_description=product_description,
@@ -134,7 +130,7 @@ async def update_product(product_name:str=Form(...),
 async def get_product(id:int ,db:Session = Depends(get_db)):
     product = db.get(Product, id)
     if product is None:
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"The id: {id} you requested for does not exist")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"The id: {id} you requested for does not exist")
     return product
 
 
@@ -144,7 +140,7 @@ async def delete_product(id:int, db:Session = Depends(get_db)):
     deleted_product = db.get(Product, id)
 
     if not deleted_product:
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"The id: {id} you requested for does not exist")
     
     # delete product image
@@ -161,6 +157,8 @@ async def delete_product(id:int, db:Session = Depends(get_db)):
                 os.remove(fullPath)
     db.delete(deleted_product)
     db.commit()
-    return HTTPException(status_code=204,
-                            detail=f"successfully deleted")
+    return {
+        'status_code':204,
+        'message': "successfully deleted"
+    }
    

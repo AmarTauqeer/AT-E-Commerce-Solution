@@ -51,8 +51,8 @@ async def get_current_user(
     access_token: str = Depends(cookie_scheme)
 ):
 
-    if not access_token:
-        return HTTPException(
+    if access_token is None:
+        raise HTTPException(
             status_code=401,
             detail="Not authenticated"
         )
@@ -63,7 +63,6 @@ async def get_current_user(
             settings.JWT_SECRET,
             settings.JWT_ALGORITHM
         )
-
         return payload
 
     except JWTError:
