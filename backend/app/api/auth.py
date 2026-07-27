@@ -13,6 +13,7 @@ from schemas.users_schema import ForgotPassword
 from sqlalchemy.orm import Session
 from core.db import get_db
 from api.models.models import User
+from logger import logger
 
 
 settings = get_settings()
@@ -162,6 +163,7 @@ class OTPVerifyRequest(BaseModel):
 
 @router.post("/request-otp")
 async def request_otp(data: EmailRequest):
+    # logger.info("hellofrom dsdsf")
     # print(data.email)
     # otp = generate_otp(data.email)
     await send_otp_email(data.email)
