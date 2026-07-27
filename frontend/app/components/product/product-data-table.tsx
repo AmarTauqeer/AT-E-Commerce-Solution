@@ -13,7 +13,7 @@ import {
     useReactTable,
     VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Check, ChevronDown, MoreHorizontal, X } from "lucide-react"
+import { ArrowUpDown, ChevronDown} from "lucide-react"
 export const defaultImage = "default_img.png"
 
 import { Button } from "@/components/ui/button"
@@ -22,9 +22,6 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -36,18 +33,16 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { toast } from "sonner"
 import { redirect, useRouter } from "next/navigation"
 import { DeleteProductDialog } from "./delete-product-dialog"
 import { getCategories } from "@/app/services/category"
 import { DataTablePagination } from "../data-table-pagination"
 import { ProductAddOrUpdateDialog } from "./product-add-update-dialog"
-import { getUser, getUserAndPermissions, getUsers, loggedIn } from "@/app/services/auth"
-import { getPermission } from "@/app/services/user-permissions"
+import { getUserAndPermissions, loggedIn } from "@/app/services/auth"
 import { FaFilePdf } from "react-icons/fa6"
 import { getProducts } from "@/app/services/product"
-// import { GetData } from "@/helper/getdata"
-// import { GetUser } from "@/helper/getuser"
+import { format } from "date-fns"
+export const defaultImage1 = "placeholder.svg"
 
 
 
@@ -195,7 +190,7 @@ export const ProductDataTable = (props: any) => {
                     </Button>
                 )
             },
-            cell: ({ row }) => <div className="lowercase">{row.getValue("created_at")}</div>,
+            cell: ({ row }) => <div className="lowercase">{format(row.getValue("created_at"),'yyyy-MM-dd')}</div>,
         },
         {
             id: "actions",
@@ -205,12 +200,15 @@ export const ProductDataTable = (props: any) => {
 
                 return (
                     <div className="flex flex-row items-center gap-1">
+                        {permissions !== undefined ? permissions.Update && permissions.resource == 4 ?
                         <ProductAddOrUpdateDialog data={{
                             id: product.id, category_id: product.category_id,
                             product_name: product.product_name, product_description: product.product_description,
                             image_path: product.image_path, sale_rate: product.sale_price.toString(), created_at: product.created_at
-                        }} />
-                        <DeleteProductDialog id={product.id} />
+                        }} />: "" : ""}
+
+                        {permissions !== undefined ? permissions.Delete && permissions.resource == 4 ?
+                            <DeleteProductDialog id={product.id} />: "" : ""}
                     </div>
                 )
             },
@@ -287,8 +285,8 @@ export const ProductDataTable = (props: any) => {
                 setId(userId)
                 const filterPermission = await getData.permissions
                 //  for profile resource id =5
-                const permissionsDb = filterPermission.filter((p: any) => p.resource == 5)
-                setPermissions(permissionsDb)
+                const permissionsDb = filterPermission.filter((p: any) => p.resource == 4)
+                setPermissions(permissionsDb[0])
                 const category_data = await getCategories()
                 // console.log(category_data)
 
@@ -301,6 +299,10 @@ export const ProductDataTable = (props: any) => {
                     // get resource name
                     const filterCategoryData = category_data.filter((i: any) => i.id == element.category_id)
                     const category_name = filterCategoryData[0].category_name;
+                    let image_path=element.image_path
+                    if (element.image_path==null || element.image_path=="") {
+                        image_path=defaultImage1
+                    }
 
                     const newProductData: productType = {
                         'id': element.id,
@@ -309,7 +311,7 @@ export const ProductDataTable = (props: any) => {
                         'category_name': category_name,
                         'product_description': element.product_description,
                         'created_at': element.created_at,
-                        'image_path': element.image_path,
+                        'image_path': image_path,
                         'sale_price': element.sale_price,
                     }
                     arr.push(newProductData)

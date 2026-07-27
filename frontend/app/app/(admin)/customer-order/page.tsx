@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { CustomerOrderDataTable } from "@/components/order/customer-order-data-table";
+import FetchingDataSkeleton from "@/components/fetching-data-skeleton";
 
 const CustomerOrder = async () => {
 
@@ -7,7 +8,7 @@ const CustomerOrder = async () => {
     <div className="">
       <div className=" py-5">
         <h1 className="mb-5 font-bold text-2xl">Customer Order</h1>
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<FetchingDataSkeleton />}>
           <SuspendedData />
         </Suspense>
       </div>

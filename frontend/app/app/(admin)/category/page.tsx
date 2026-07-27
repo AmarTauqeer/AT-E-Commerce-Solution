@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { CategoryDataTable } from "@/components/category/category-data-table";
+import FetchingDataSkeleton from "@/components/fetching-data-skeleton";
 
 
 const Category = async () => {
@@ -7,7 +8,7 @@ const Category = async () => {
     <div className="">
       <div className=" py-5">
         <h1 className="mb-5 font-bold text-2xl">Category</h1>
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<FetchingDataSkeleton />}>
           <SuspendedData />
         </Suspense>
       </div>

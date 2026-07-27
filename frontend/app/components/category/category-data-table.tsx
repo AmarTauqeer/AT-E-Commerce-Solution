@@ -35,7 +35,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { toast } from "sonner"
 import { redirect, useRouter } from "next/navigation"
 import { DeleteCategoryDialog } from "./delete-category-dialog"
 import { getCategories } from "@/app/services/category"
@@ -44,6 +43,7 @@ import { getUser, getUserAndPermissions, getUsers, loggedIn } from "@/app/servic
 import { getPermission } from "@/app/services/user-permissions"
 import { CategoryAddOrUpdateDialog } from "./category-add-update.dialog"
 import { FaFilePdf } from "react-icons/fa6";
+import { format } from "date-fns"
 
 
 
@@ -69,7 +69,7 @@ export type currentUserType = {
 }
 
 
-export const CategoryDataTable = (props:any) => {
+export const CategoryDataTable = (props: any) => {
 
     const columns: ColumnDef<categoryType>[] = [
         {
@@ -111,7 +111,7 @@ export const CategoryDataTable = (props:any) => {
                     </Button>
                 )
             },
-            cell: ({ row }) => <div className="lowercase">{row.getValue("created_at")}</div>,
+            cell: ({ row }) => <div className="lowercase">{format(row.getValue("created_at"), 'yyyy-MM-dd')}</div>,
         },
         {
             id: "actions",
@@ -120,10 +120,14 @@ export const CategoryDataTable = (props:any) => {
                 const category = row.original
                 return (
                     <div className="flex flex-row items-center gap-1">
-                        <CategoryAddOrUpdateDialog data={{
-                            id: category.id, category_name: category.category_name, created_at: category.created_at
-                        }} />
-                        <DeleteCategoryDialog id={category.id} />
+                        {permissions !== undefined ? permissions.Update && permissions.resource == 7 ?
+                            <CategoryAddOrUpdateDialog data={{
+                                id: category.id, category_name: category.category_name, created_at: category.created_at
+                            }} /> : "" : ""}
+
+                        {permissions !== undefined ? permissions.Delete && permissions.resource == 7 ?
+                            <DeleteCategoryDialog id={category.id} />
+                            : "" : ""}
                     </div>
                 )
             },
@@ -201,8 +205,8 @@ export const CategoryDataTable = (props:any) => {
                 setId(userId)
                 const filterPermission = await getData.permissions
                 //  for category resource id =7
-                const permissionsDb = filterPermission.filter((p: any) => p.resource == 5)
-                setPermissions(permissionsDb)
+                const permissionsDb = filterPermission.filter((p: any) => p.resource == 7)
+                setPermissions(permissionsDb[0])
                 // get response data
                 const response = await getCategories();
                 const categoryResponse = response;
@@ -244,10 +248,12 @@ export const CategoryDataTable = (props:any) => {
                         className="max-w-sm mr-2"
                     />
                     <div className="w-full flex flex-row gap-1">
-                        <CategoryAddOrUpdateDialog data={{
-                            id: "0", category_name: undefined,
-                            created_at: undefined
-                        }} />
+                        {permissions !== undefined && permissions.Write && permissions.resource == 7 && 
+                            <CategoryAddOrUpdateDialog data={{
+                                id: "0", category_name: undefined,
+                                created_at: undefined
+                            }} />
+                        }
                         <div><Button type="button" variant="outline" className="text-blue-900" onClick={handleclick}><FaFilePdf /></Button></div>
                     </div>
 

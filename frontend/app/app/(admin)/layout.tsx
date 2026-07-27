@@ -9,6 +9,8 @@ import { cookies } from 'next/headers'
 import React from 'react'
 import "../../app/globals.css"
 import { Toaster } from 'sonner'
+import Providers from '@/components/providers'
+import ReduxProvider from '@/components/redux-provider'
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,29 +34,35 @@ const Adminlayout = async ({ children }: Props) => {
   const cookie = await cookies();
   const defaultOpen = cookie.get("sidebar_state")?.value === "true"
   return (
-     <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}
       >
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
-        <main className="w-full">
-          <Navbar />
-          <><div className="p-6">{children}</div></>
-        </main>
-      </SidebarProvider>
-       <Toaster position="top-center" />
-    </ThemeProvider>
-    </body>
+        <Providers>
+          <ReduxProvider>
+
+
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <SidebarProvider defaultOpen={defaultOpen}>
+                <AppSidebar />
+                <main className="w-full">
+                  <Navbar />
+                  <><div className="p-6">{children}</div></>
+                </main>
+              </SidebarProvider>
+              <Toaster position="top-center" />
+            </ThemeProvider>
+          </ReduxProvider>
+        </Providers>
+      </body>
     </html>
   )
 }

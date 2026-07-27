@@ -1,13 +1,15 @@
 'use client'
-
 import { loggedIn } from "@/app/services/auth"
 import { addToCart } from "@/app/store/cart"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Euro } from "lucide-react"
 import Image from "next/image"
 import { redirect, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
+
+// import ReactImageMagnify from 'react-image-magnify';
 
 function cn(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
@@ -74,11 +76,11 @@ const ProductDetail = () => {
                 <div className="p-5">
                     <h2 className="text-2xl font-bold mb-2">{category_name}</h2>
                     <h3 className='text-xl font-semibold'>{product_name}</h3>
-                    <div className='text-sm text-gray-500 mb-2'>
+                    <div className='text-sm text-gray-500 mb-2 text-justify'>
                         {product_description}
                     </div>
                     <div className='text-lg font-bold mb-3 flex flex-row items-center'>
-                        <Euro />{sale_price}
+                        <Euro />{sale_price.toFixed(2)}
                     </div>
                     <Button
                         className='w-[30%] py-1'
@@ -87,27 +89,19 @@ const ProductDetail = () => {
                         Add to Cart
                     </Button>
                 </div>
-                <div className='relative h-48 md:h-96 lg:h-96'>
-                    <img
+
+                <div className="relative h-full w-full overflow-hidden rounded-lg border">
+                    <Image
                         src={image_path || ""}
                         alt={product_name || ""}
-                        className='w-full h-full object-fit'
+                        width={700}
+                        height={400}
+                        className="object-cover transition-transform duration-500 ease-in-out hover:scale-125"
+                        unoptimized
                     />
-                    {/* <Image
-            src={image_path || ""}
-            alt={product_name || ""}
-            layout='fill'
-            objectFit='cover'
-            className={cn('rounded-lg border-2 transform transition-all group-hover:opacity-75 group-hover:scale-105 duration-700 ease-in-out',
-              isLoading
-                ? 'grayscale blur-2xl scale-110'
-                : 'grayscale-0 blur-0 scale-100'
-            )}
-            onLoadingComplete={() => setIsLoading(false)}
-          /> */}
                 </div>
-
             </div>
+
         </>
     )
 }

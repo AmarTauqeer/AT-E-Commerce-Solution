@@ -1,5 +1,5 @@
 'use client'
-import { Loader2Icon } from "lucide-react"
+import { Eye, EyeOff, Loader2Icon } from "lucide-react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { api } from "@/app/lib/axios"
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group"
 
 
 const UserLogin = () => {
@@ -33,6 +34,7 @@ const UserLogin = () => {
 
     const [loading, setLoading] = useState(false);
     const [logged, setLogged] = useState("loggedout");
+    const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
 
@@ -59,6 +61,11 @@ const UserLogin = () => {
 
         }
     }
+
+    const handlePassword = () => {
+        setShowPassword(!showPassword)
+    }
+
 
 
     return (
@@ -97,7 +104,12 @@ const UserLogin = () => {
                                             <FormItem>
                                                 <FormLabel>Password</FormLabel>
                                                 <FormControl>
-                                                    <Input type="password" placeholder="password" {...field} className="mb-1" />
+                                                    <InputGroup>
+                                                        <Input type={showPassword ? "text" : "password"} placeholder="*******" {...field} className="mb-1 border-none focus-visible:ring-0 focus-visible:ring-transparent" />
+                                                        <InputGroupAddon align="inline-end" className="px-2 hover:cursor-pointer">
+                                                            {showPassword ? <EyeOff onClick={handlePassword} /> : <Eye onClick={handlePassword} />}
+                                                        </InputGroupAddon>
+                                                    </InputGroup>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

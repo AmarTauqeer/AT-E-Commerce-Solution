@@ -19,10 +19,11 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import { CheckCircle2Icon, Loader2Icon } from "lucide-react";
+import { CheckCircle2Icon, Eye, EyeOff, Loader2Icon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { userAddOrUpdateFormData } from "../../services/auth";
+import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 
 
 export const RegisterSchema = z.object({
@@ -46,7 +47,9 @@ export const RegisterSchema = z.object({
 const Register = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    const [message, setMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+    
 
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
@@ -57,6 +60,13 @@ const Register = () => {
             passwordConfirm:"amar",
                 },
     })
+
+    const handlePassword = () => {
+        setShowPassword(!showPassword)
+    }
+    const handlePasswordConfirm = () => {
+        setShowPasswordConfirm(!showPasswordConfirm)
+    }
 
     async function handleSubmit(data: z.infer<typeof RegisterSchema>) {
         setLoading(true);
@@ -120,7 +130,12 @@ const Register = () => {
                                         <FormItem>
                                             <FormLabel className="px-2 mt-2">Password</FormLabel>
                                             <FormControl>
-                                                <Input type="password" placeholder="password" {...field} />
+                                                <InputGroup>
+                                                    <Input type={showPassword ? "text" : "password"} placeholder="*******" {...field} className="mb-1 border-none focus-visible:ring-0 focus-visible:ring-transparent" />
+                                                    <InputGroupAddon align="inline-end" className="px-2 hover:cursor-pointer">
+                                                        {showPassword ? <EyeOff onClick={handlePassword} /> : <Eye onClick={handlePassword} />}
+                                                    </InputGroupAddon>
+                                                </InputGroup>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -133,7 +148,12 @@ const Register = () => {
                                         <FormItem>
                                             <FormLabel className="px-2 mt-2">Password Confirm</FormLabel>
                                             <FormControl>
-                                                <Input type="password" placeholder="password confirm" {...field} />
+                                                <InputGroup>
+                                                    <Input type={showPasswordConfirm ? "text" : "password"} placeholder="*******" {...field} className="mb-1 border-none focus-visible:ring-0 focus-visible:ring-transparent" />
+                                                    <InputGroupAddon align="inline-end" className="px-2 hover:cursor-pointer">
+                                                        {showPasswordConfirm ? <EyeOff onClick={handlePasswordConfirm} /> : <Eye onClick={handlePasswordConfirm} />}
+                                                    </InputGroupAddon>
+                                                </InputGroup>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 import uuid
 
+from datetime import date, datetime
 from sqlmodel import select
 
 from core.config import get_settings
@@ -31,7 +32,8 @@ async def get_products_all(db: Session = Depends(get_db)):
 async def product_sent(product_name:str=Form(...),
                        product_description:str = Form(...),
                        category_id:int = Form(...),
-                       sale_price:int = Form(...), 
+                       sale_price:int = Form(...),
+                       created_at:Optional[date] = Form(...), 
                        file_upload: UploadFile|None=File(None), db:Session = Depends(get_db)):
     image_path=""
 
@@ -55,6 +57,7 @@ async def product_sent(product_name:str=Form(...),
             product_description=product_description,
             image_path=image_path,
             sale_price=sale_price,
+            created_at=created_at
             )
 
         db.add(product)
@@ -68,6 +71,7 @@ async def product_sent(product_name:str=Form(...),
             product_name=product_name,
             product_description=product_description,
             sale_price=sale_price,
+            created_at=created_at
             )
 
         db.add(product)
@@ -83,6 +87,7 @@ async def update_product(product_name:str=Form(...),
                        product_description:str = Form(...),
                        category_id:int = Form(...),
                        sale_price:int = Form(...), 
+                       created_at:Optional[date] = Form(...),
                        file_upload: UploadFile | None=File(None), 
                        id:int=1, db:Session = Depends(get_db)):
     updated_product =  db.get(Product,id)
@@ -90,20 +95,21 @@ async def update_product(product_name:str=Form(...),
     if not updated_product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"The id:{id} does not exist")
 
+
     image_path = db.query(Product.image_path).filter(Product.id == id).scalar()
-    image_path_for_update=""
-    # print(file_upload.filename)
-    
-    if(image_path!=None):
-        file_name = image_path[45:]
-        # print(f"{file_name} from db and file name from upload= {file_upload.filename}")
-        rootDir ="static/uploads/product"
-        for relPath,dir, files in os.walk(rootDir):
-            fullPath = os.path.join(relPath, file_name)
-            # print(files)
-            if(file_name in files):
-                os.remove(fullPath)
-                
+    image_path_for_update=image_path
+
+    if file_upload!=None:
+        if(image_path!=None):
+            file_name = image_path[45:]
+            # print(f"{file_name} from db and file name from upload= {file_upload.filename}")
+            rootDir ="static/uploads/product"
+            for relPath,dir, files in os.walk(rootDir):
+                fullPath = os.path.join(relPath, file_name)
+                # print(files)
+                if(file_name in files):
+                    os.remove(fullPath)
+                    
             data = await file_upload.read()
 
             unique_name = f"{uuid.uuid4()}_{file_upload.filename}"
@@ -113,6 +119,17 @@ async def update_product(product_name:str=Form(...),
             with open(save_to, 'wb') as f:
                 f.write(data)
             image_path_for_update = f"{HOST}/static/uploads/product/{unique_name}"
+        else:
+            data = await file_upload.read()
+
+            unique_name = f"{uuid.uuid4()}_{file_upload.filename}"
+            print(unique_name)
+            save_to = UPLOAD_DIR / unique_name
+
+            with open(save_to, 'wb') as f:
+                f.write(data)
+            image_path_for_update = f"{HOST}/static/uploads/product/{unique_name}"
+        
 
     updated_product.category_id=category_id,
     updated_product.product_name=product_name,
@@ -120,6 +137,7 @@ async def update_product(product_name:str=Form(...),
     updated_product.image_path=image_path_for_update,
     updated_product.sale_price=sale_price,
     updated_product.id=id,
+    updated_product.created_at=created_at
 
     db.commit()
     db.refresh(updated_product)

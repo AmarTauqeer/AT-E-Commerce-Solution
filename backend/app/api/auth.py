@@ -49,12 +49,11 @@ async def login(data: LoginSchema, response: Response, db: Session = Depends(get
             detail="Invalid email or password"
         )
 
-    # admin
-    # print(data.username)
     token = create_access_token({
         "sub": data.username
     })
 
+    # check role for admin
     if user.role_id == 2:
 
         response.set_cookie(

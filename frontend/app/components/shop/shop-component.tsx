@@ -16,6 +16,7 @@ import { RootState, store } from '@/app/store'
 import { getProducts } from '@/app/services/product'
 import { getCategories } from '@/app/services/category'
 
+
 interface Product {
     category_id: number,
     product_name: string,
@@ -34,10 +35,6 @@ interface Category {
     updated_at?: Date
 }
 
-interface productProps {
-    products: Product[]
-    categories: Category[]
-}
 
 function cn(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
@@ -53,8 +50,8 @@ const ShopComponent: FC = () => {
     const [productPerPage, setProductPerPage] = useState("4")
     const [search, setSearch] = useState("")
     const [category, setCategory] = useState("all")
-    const[categories, setCategories] = useState<Category[]>([])
-    const[products, setProducts] = useState<Product[]>([])
+    const [categories, setCategories] = useState<Category[]>([])
+    const [products, setProducts] = useState<Product[]>([])
 
     const totalProducts = products.length
 
@@ -114,6 +111,7 @@ const ShopComponent: FC = () => {
     }
 
     useEffect(() => {
+
         const getData = async () => {
             async function getProductsData() {
                 return await getProducts()
@@ -124,8 +122,8 @@ const ShopComponent: FC = () => {
             const categoryData = getCategoriesData()
             const productData = getProductsData()
             const [categoriesResponse, productsResponse] = await Promise.all([categoryData, productData])
-           
-            if (productsResponse.detail=='Not authenticated') {
+
+            if (productsResponse.detail == 'Not authenticated') {
                 redirect("/user-login")
             }
             if (categoriesResponse) {
@@ -136,13 +134,13 @@ const ShopComponent: FC = () => {
             }
         }
         getData()
-        
+
+
 
     }, [dispatch, search])
 
     return (
         <>
-
             <div className='ml-2 mr-2 gap-2 flex flex-col md:flex-row lg:flex-row xl:flex-row justify-between'>
                 <Input
                     className='max-w-64'
@@ -199,34 +197,35 @@ const ShopComponent: FC = () => {
                 {currentProducts && currentProducts.map((i: any) => (
                     <Card key={i.id} className='overflow-hidden rounded-lg shadow-lg p-0'>
                         <CardHeader className='p-0 relative'>
-                            <div className='relative group h-48'>
-                                <img
-                                    src={i.image_path}
-                                    alt={i.product_name}
-                                    className='w-full h-full object-fit' 
-                                />
-                                {/* <Image
-                                    src={i.image_path}
-                                    alt={i.product_name}
-                                    layout='fill'
-                                    objectFit='cover'
-                                    className={cn('h-full w-full transform transition-all group-hover:opacity-75 group-hover:scale-105 duration-700 ease-in-out',
-                                        isLoading
-                                            ? 'grayscale blur-2xl scale-110'
-                                            : 'grayscale-0 blur-0 scale-100'
-                                    )}
-                                    onLoadingComplete={() => setIsLoading(false)}
-                                /> */}
+                            <div className='relative h-94 w-full overflow-hidden rounded-lg border'>
+                                <Link className='px-2 text-md font-bold' href={{
+                                    pathname: "/shop/shop-detail",
+                                    query: {
+                                        id: i.id,
+                                        product_name: i.product_name,
+                                        product_description: i.product_description,
+                                        sale_price: i.sale_price,
+                                        image_path: i.image_path,
+                                        category_name: categoryName(i.category_id)
+                                    }
+                                }}><Image
+                                        src={i.image_path}
+                                        alt={i.product_name}
+                                        fill
+                                        className="object-cover transition-transform duration-500 ease-in-out hover:scale-125"
+                                        unoptimized
+                                    /></Link>
+
+
                                 <Badge className='absolute top-2 left-2'>
                                     <h4 className='text-md font-semibold'>{categoryName(i.category_id)}</h4>
                                 </Badge>
-                                {/* ))} */}
                             </div>
 
                             <CardContent className='p-1'>
                                 <h3 className='text-xl font-semibold mb-4 min-h-14'>{i.product_name}</h3>
                                 <div className='text-lg font-semibold mb-3 flex flex-row items-center'>
-                                    <Euro />{i.sale_price}
+                                    <Euro />{i.sale_price.toFixed(2)}
                                 </div>
                                 <div className='text-sm text-gray-500 mb-4 min-h-10'>
                                     {i.product_description.slice(0, 60)}<Link className='px-2 text-md font-bold' href={{

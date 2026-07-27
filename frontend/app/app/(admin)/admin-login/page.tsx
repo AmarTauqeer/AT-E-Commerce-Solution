@@ -1,20 +1,18 @@
 'use client'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import LoginForm from "@/components/login-form"
-import { loggedIn } from "@/app/services/auth"
+import { getUser, getUsers, loggedIn } from "@/app/services/auth"
 import { redirect } from "next/navigation"
 import { useEffect } from "react"
 
-
 const AdminLogin = () => {
+
 
     useEffect(() => {
         const getloginStatus = async () => {
             const loginStatus = await loggedIn();
             console.log(loginStatus)
-            if (loginStatus == "loggedin") {
-                redirect("/admin-dashboard");
-            }
         }
         getloginStatus()
     })

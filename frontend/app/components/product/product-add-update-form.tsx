@@ -1,6 +1,6 @@
 "use client";
 import React, { Dispatch, FormEvent, FormEventHandler, MouseEventHandler, SetStateAction, useEffect, useState } from "react";
-import { Loader2Icon } from "lucide-react";
+import { ChevronDownIcon, ImageUp, Loader2Icon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 
@@ -8,6 +8,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z, { boolean, int, number, string, unknown } from "zod"
 export const defaultImage = "default_img.png"
+export const defaultImage1 = "placeholder.svg"
 import {
     InputGroup,
     InputGroupAddon,
@@ -34,6 +35,9 @@ import { Button } from "../ui/button";
 import { productAddOrUpdateFormData } from "@/app/services/product";
 import { Form } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
+import { format } from "date-fns"
 
 export const addOrUpdateSchema = z.object({
     id: z.string(),
@@ -42,16 +46,16 @@ export const addOrUpdateSchema = z.object({
     product_description: z.string().min(1, "Product desription is required!"),
     sale_rate: z.string().min(1, "Sale rate must be greater or equal 1!"),
     file_upload: z
-    .instanceof(File)
-    .optional()
-    .refine(
-      (file) =>
-        !file ||
-        ["image/jpeg", "image/png", "image/webp"].includes(file.type),
-      {
-        message: "Only JPG, PNG, and WebP images are allowed",
-      }
-    ),
+        .instanceof(File)
+        .optional()
+        .refine(
+            (file) =>
+                !file ||
+                ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+            {
+                message: "Only JPG, PNG, and WebP images are allowed",
+            }
+        ),
 })
 
 export type AddOrUpdate = {
@@ -76,6 +80,9 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
     const [categoryData, setCategoryData] = useState([])
     const [userData, setUserData] = useState([])
 
+    const [createDate, setCreateDate] = useState<Date>()
+    const [openCreateDateFrom, setOpenCreateFrom] = useState(false);
+
     const form = useForm<z.infer<typeof addOrUpdateSchema>>({
         defaultValues: {
             category_id: "1",
@@ -88,6 +95,7 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
     })
 
     async function onSubmit(data: z.infer<typeof addOrUpdateSchema>) {
+
         let insertOrUpdate = "Insert"
 
         if (parseInt(data.id) >= 1) {
@@ -98,15 +106,49 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
         // console.log(data.file_upload)
         if (data.file_upload) {
             formObj.append('file_upload', data.file_upload)
-
         }
+
+
+
+
+        // if (createDate!=undefined) {
+        //     let temp=0;
+        //     console.log(createDate.toString())
+        //     temp = createDate.toString().length
+        //     console.log(temp)
+        //     if (temp==64) {
+        //         formObj.append('created_at', createDate.toISOString())
+        //     }
+        // }
+
+        // if (createDate!=undefined) {
+        //     if (props.data!=undefined && props.data.created_at!=undefined) {
+        //         console.log('not 0')
+        //         console.log(typeof(props.data.created_at))
+        //         formObj.append('created_at', new Date(props.data.created_at).toISOString())
+        //     }else{
+        //         formObj.append('created_at', createDate.toISOString())
+        //     }
+        // }
+
+
         formObj.append('id', data.id)
         formObj.append('category_id', data.category_id)
         formObj.append('product_name', data.product_name)
         formObj.append('product_description', data.product_description)
         formObj.append('sale_price', data.sale_rate)
 
+        if (createDate != undefined) {
+            formObj.append('created_at', format(createDate, 'yyyy-MM-dd'))
+        }
+
+        formObj.values().forEach(element => {
+            console.log(element)
+        });
+
         const response = await productAddOrUpdateFormData(formObj)
+        console.log(response)
+
 
         if (response.category_id != undefined) {
             router.replace("/product")
@@ -156,6 +198,7 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
                                 image_path = recData.image_path
                             // categoryId = recData.category_id.toString()
                             created_at = recData.created_at
+                            setCreateDate(created_at)
                         }
 
                         if (recData.category_id !== undefined) {
@@ -166,8 +209,8 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
                             categoryId = "1"
                         }
                         // image preview
-                        if (image_path=="" || image_path=="None") {
-                            image_path =defaultImage
+                        if (image_path == "" || image_path == "None") {
+                            image_path = defaultImage1
                         }
                         setImageUrl(image_path)
 
@@ -195,6 +238,22 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                         <div className="">
+                            <FieldGroup>
+                                <FieldLabel htmlFor="date">
+                                    Date
+                                </FieldLabel>
+                                <Popover open={openCreateDateFrom} onOpenChange={setOpenCreateFrom}>
+                                    <PopoverTrigger render={<Button variant={"outline"} data-empty={!createDate} className="mb-3 justify-between text-left font-normal data-[empty=true]:text-muted-foreground">{createDate ? format(createDate, "PPP") : <span>Pick a date</span>}<ChevronDownIcon data-icon="inline-end" /></Button>} />
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={createDate}
+                                            onSelect={(selectedDate) => { setCreateDate(selectedDate); setOpenCreateFrom(false) }}
+                                            defaultMonth={createDate}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </FieldGroup>
                             <FieldGroup>
                                 <Controller
                                     name="product_name"
@@ -297,20 +356,19 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
                                 </div>
                             </FieldGroup>
                             <div className="grid grid-cols-2 gap-2 mt-6">
-
                                 <Button variant="default" type="submit" onClick={(e) => { e.stopPropagation(); form.handleSubmit(onSubmit) }} disabled={loading}>
                                     {loading && <><Loader2Icon className="animate-spin" /> Please wait</>}
                                     {!loading && <p>Submit</p>}
                                 </Button>
                                 <Button className="grid-cols-1" variant="outline" type="button" onClick={() => props.setIsOpen(false)}>Cancel</Button>
                             </div>
-
                         </div>
+
                         <div className="w-full flex flex-col gap-2">
                             <div>
                                 {
                                     imageUrl &&
-                                    <img src={imageUrl} className="object-cover hover: hoverEffect" alt="preview-image" />
+                                    <img src={imageUrl} className="rounded-2xl w-full" alt="preview-image" />
                                 }
                             </div>
                             <Controller
@@ -320,7 +378,7 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
                                     return (
                                         <input
                                             type="file"
-                                            className="px-2"
+                                            className="px-2 hover:cursor-pointer"
                                             ref={ref}
                                             accept="image/*"
                                             name={name}

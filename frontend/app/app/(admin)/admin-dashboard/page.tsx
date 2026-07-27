@@ -5,6 +5,7 @@ import { getOrders } from '@/app/services/order'
 import { getOrderItems } from '@/app/services/order-items'
 import { getProducts } from '@/app/services/product'
 import ChartAreaInteractive from '@/components/app-area-chart'
+import FetchingDataSkeleton from '@/components/fetching-data-skeleton'
 import OrderView from '@/components/order/order-overview'
 import Link from 'next/link'
 import { redirect, usePathname } from 'next/navigation'
@@ -113,12 +114,12 @@ const Dashboard = () => {
         </Link>
       </div>
      
-      {order && order.length > 0 &&
+      {order && order.length > 0 ?
         <>
           <ChartAreaInteractive data={order} />
           <br />
           {data!=undefined && <OrderView passingData={data} />}
-        </>
+        </>:<FetchingDataSkeleton />
       }
     </>
   )

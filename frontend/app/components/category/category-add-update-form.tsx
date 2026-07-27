@@ -1,8 +1,9 @@
 "use client";
 import React, { Dispatch, FormEvent, FormEventHandler, MouseEventHandler, SetStateAction, useEffect, useState } from "react";
-import { Loader2Icon } from "lucide-react";
+import { ChevronDownIcon, Loader2Icon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns"
 
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +26,8 @@ import { toast } from "sonner";
 import { categoryAddOrUpdateFormData, getCategories } from "@/app/services/category";
 import { Button } from "../ui/button";
 import { Form } from "../ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
 
 export const addOrUpdateSchema = z.object({
     id: z.string(),
@@ -36,7 +39,7 @@ export type AddOrUpdate = {
         id: string | undefined,
         category_name: string | undefined,
         created_at?: Date,
-        updated_at?:Date
+        updated_at?: Date
     },
     setIsOpen: Dispatch<SetStateAction<boolean>>
 }
@@ -45,6 +48,8 @@ const CategoryAddEditForm = (props: AddOrUpdate) => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const [userData, setUserData] = useState([])
+    const [createDate, setCreateDate] = useState<Date>()
+    const [openCreateDateFrom, setOpenCreateFrom] = useState(false);
 
     const form = useForm<z.infer<typeof addOrUpdateSchema>>({
         defaultValues: {
@@ -56,20 +61,25 @@ const CategoryAddEditForm = (props: AddOrUpdate) => {
 
     async function onSubmit(data: z.infer<typeof addOrUpdateSchema>) {
         let insertOrUpdate = "Insert"
+        let date= new Date();
 
         if (parseInt(data.id) >= 1) {
             insertOrUpdate = "Update"
+        }
+        
+        if (createDate!=undefined) {
+            date= new Date(format(createDate,'yyyy-MM-dd'))
         }
 
         const postData = {
             id: data.id,
             category_name: data.category_name,
-            created_at: props.data.created_at,
-            updated_at:new Date()
+            created_at: date,
+            // created_at: props.data.created_at,
+            updated_at: date
         }
 
         const response = await categoryAddOrUpdateFormData(postData)
-        // console.log(response)
 
         if (response.category_name != undefined) {
             router.replace("/category")
@@ -106,6 +116,7 @@ const CategoryAddEditForm = (props: AddOrUpdate) => {
                 id = recData.id.toString()
                 category_name = recData.category_name
                 created_at = recData.created_at
+                setCreateDate(recData.created_at)
             }
 
             let defaultValues = {
@@ -113,8 +124,8 @@ const CategoryAddEditForm = (props: AddOrUpdate) => {
                 catetgory_name: category_name,
             }
             // console.log(JSON.stringify(defaultValues) + ' from useeffect')
-            form.setValue("id",id)
-            form.setValue("category_name",category_name)
+            form.setValue("id", id)
+            form.setValue("category_name", category_name)
             // form.setValue("category_id",categoryId)
             // form.reset({ ...defaultValues })
         }
@@ -126,6 +137,22 @@ const CategoryAddEditForm = (props: AddOrUpdate) => {
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                         <div className="">
+                            <FieldGroup>
+                                <FieldLabel htmlFor="date">
+                                    Date
+                                </FieldLabel>
+                                <Popover open={openCreateDateFrom} onOpenChange={setOpenCreateFrom}>
+                                    <PopoverTrigger render={<Button variant={"outline"} data-empty={!createDate} className="mb-3 justify-between text-left font-normal data-[empty=true]:text-muted-foreground">{createDate ? format(createDate, "PPP") : <span>Pick a date</span>}<ChevronDownIcon data-icon="inline-end" /></Button>} />
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={createDate}
+                                            onSelect={(selectedDate) => { setCreateDate(selectedDate); setOpenCreateFrom(false) }}
+                                            defaultMonth={createDate}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </FieldGroup>
                             <FieldGroup>
                                 <Controller
                                     name="category_name"
@@ -150,6 +177,7 @@ const CategoryAddEditForm = (props: AddOrUpdate) => {
                                 />
 
                             </FieldGroup>
+
                             <div className="grid grid-cols-2 gap-2 mt-6">
 
                                 <Button variant="default" type="submit" onClick={(e) => { e.stopPropagation(); form.handleSubmit(onSubmit) }} disabled={loading}>

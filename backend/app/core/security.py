@@ -3,16 +3,12 @@ from fastapi import Cookie, Depends, HTTPException
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 
-from passlib.context import CryptContext
-from fastapi.security import APIKeyCookie, OAuth2PasswordBearer
+from fastapi.security import APIKeyCookie
 from datetime import timedelta, datetime
-from jose import jwt, JWSError
+from jose import jwt
 from core.config import get_settings
 
-from starlette.authentication import AuthCredentials, UnauthenticatedUser
 
-
-from core.db import get_db
 settings = get_settings()
 
 # shows lock icon in swagger
@@ -44,10 +40,10 @@ def create_access_token(data: dict):
 
     return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
-async def create_refresh_token(data):
+def create_refresh_token(data):
     return jwt.encode(data, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
-async def get_current_user(
+def get_current_user(
     access_token: str = Depends(cookie_scheme)
 ):
 

@@ -1,19 +1,19 @@
 'use client'
-import { Loader2Icon } from "lucide-react"
+import { Eye, EyeOff, Loader2Icon } from "lucide-react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useState } from "react"
-import { redirect, useRouter } from "next/navigation"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import z from "zod"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { LoginFormSchema } from "@/app/schemas/login-schema"
-import { loggedIn, loginUser } from "@/app/services/auth"
+import { loginUser } from "@/app/services/auth"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
-import { getRole } from "@/app/services/role"
+// import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { InputGroup, InputGroupAddon } from "./ui/input-group"
 
 const LoginForm = () => {
 
@@ -27,7 +27,7 @@ const LoginForm = () => {
     })
 
     const [loading, setLoading] = useState(false);
-    const [logged, setLogged] = useState("loggedout");
+    const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
 
@@ -40,8 +40,8 @@ const LoginForm = () => {
             role: parseInt(data.role)
         }
         const response = await loginUser(jsonData)
-        console.log(response)
-
+        // console.log(response)
+        
         if (response.status_code !== undefined && response.status_code == 401) {
             toast.error(<span className="text-red-500">{response.detail}</span>)
             setLoading(false)
@@ -56,6 +56,10 @@ const LoginForm = () => {
 
     }
 
+    const handlePassword=()=>{
+        setShowPassword(!showPassword)
+    }
+
 
     return (
         <>
@@ -68,7 +72,7 @@ const LoginForm = () => {
                             <FormItem>
                                 <FormLabel>User</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="email" {...field} className="mb-2" height={2} />
+                                        <Input placeholder="email" {...field} className="mb-2 border-1 focus-visible:ring-0 focus-visible:ring-transparent" height={2} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -81,41 +85,17 @@ const LoginForm = () => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input type="password" placeholder="password" {...field} className="mb-1" />
+                                    <InputGroup>
+                                        <Input type={showPassword ? "text" : "password"} placeholder="*******" {...field} className="mb-1 border-none focus-visible:ring-0 focus-visible:ring-transparent" />
+                                        <InputGroupAddon align="inline-end" className="px-2 hover:cursor-pointer">
+                                            {showPassword ? <EyeOff onClick={handlePassword} /> : <Eye onClick={handlePassword} />}
+                                        </InputGroupAddon>
+                                    </InputGroup>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    {/* <FormField
-                        control={form.control}
-                        name="role"
-                        render={({ field, fieldState }) => (
-                            <FormItem>
-                                <FormLabel>Role</FormLabel>
-                                <FormControl>
-                                    <Select
-                                        name={field.name}
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select a role" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value="2">Admin</SelectItem>
-                                                <SelectItem value="1">User</SelectItem>
-                                                <SelectItem value="3">Guest</SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    /> */}
                     <Button type="submit" className="w-full mt-2" disabled={loading}>
                         {loading && <><Loader2Icon className="animate-spin" /> Please wait</>}
                         {!loading && <p>Submit</p>}

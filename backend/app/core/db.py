@@ -1,6 +1,4 @@
 from sqlalchemy import create_engine
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
 from core.config import get_settings
 from sqlmodel import SQLModel, Session
 

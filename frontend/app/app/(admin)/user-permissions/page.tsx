@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { PermissionsDataTable } from "@/components/user-permissions/permission-data-table";
+import FetchingDataSkeleton from "@/components/fetching-data-skeleton";
 
 const Permissions = async () => {
   
@@ -7,7 +8,7 @@ const Permissions = async () => {
     <div className="">
       <div className=" py-5">
         <h1 className="mb-5 font-bold text-2xl">User Permissions</h1>
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<FetchingDataSkeleton />}>
           <SuspendedData />
         </Suspense>
       </div>
