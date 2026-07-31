@@ -2,15 +2,15 @@ from typing import List
 
 from sqlmodel import select
 
-from core.config import get_settings
+from app.core.config import get_settings
 from fastapi import APIRouter, Depends, Response, HTTPException
-from core.security import get_current_user
-from schemas.user_permission_schema import UserPermissionSchema, CreateUserPermissionSchema, UpdateUserPermissionSchema
+from app.core.security import get_current_user
+from app.schemas.user_permission_schema import UserPermissionSchema, CreateUserPermissionSchema, UpdateUserPermissionSchema
 from starlette import status
 
 from sqlalchemy.orm import Session
-from core.db import get_db
-from api.models.models import UserPermission
+from app.core.db import get_db
+from app.api.models.models import UserPermission
 
 router = APIRouter(tags=["User Permission"],
                    dependencies=[Depends(get_current_user)])

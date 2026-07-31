@@ -2,15 +2,15 @@ from typing import List
 
 from sqlmodel import select, text
 
-from core.config import get_settings
+from app.core.config import get_settings
 from fastapi import APIRouter, Depends, Response, HTTPException
-from core.security import get_current_user
-from schemas.order_schema import OrderSchema, CreateOrderSchema, UpdateOrderSchema
+from app.core.security import get_current_user
+from app.schemas.order_schema import OrderSchema, CreateOrderSchema, UpdateOrderSchema
 from starlette import status
 
 from sqlalchemy.orm import Session
-from core.db import get_db
-from api.models.models import Order
+from app.core.db import get_db
+from app.api.models.models import Order
 
 router = APIRouter(tags=["Customer Order"],
                    dependencies=[Depends(get_current_user)])

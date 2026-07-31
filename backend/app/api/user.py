@@ -4,18 +4,18 @@ from typing import List
 from fastapi.responses import JSONResponse
 from sqlmodel import select
 
-from api.helper.user_helper import create_user_account
-from api.helper.user_response import UserResponse
-from core.config import get_settings
+from app.api.helper.user_helper import create_user_account
+from app.api.helper.user_response import UserResponse
+from app.core.config import get_settings
 from fastapi import APIRouter, Depends, HTTPException
-from core.security import get_current_user, get_password_hash
-from schemas.users_schema import ForgotPassword, UserUpdateSchema, CreateUserRequest
+from app.core.security import get_current_user, get_password_hash
+from app.schemas.users_schema import ForgotPassword, UserUpdateSchema, CreateUserRequest
 from starlette import status
 
 from sqlalchemy.orm import Session
-from core.db import get_db
-from api.models.models import User
-from api.helper.send_email import send_email_varification
+from app.core.db import get_db
+from app.api.models.models import User
+from app.api.helper.send_email import send_email_varification
 
 router = APIRouter(tags=["User"])
 

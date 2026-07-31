@@ -1,24 +1,25 @@
-from api.helper.send_email import send_reset_email
+from app.api.helper.send_email import send_reset_email
 from fastapi.security import APIKeyCookie
 from pydantic import BaseModel, EmailStr
 
-from api.otp import send_otp_email, verify_otp
-from core.config import get_settings
+from app.api.otp import send_otp_email, verify_otp
+from app.core.config import get_settings
 from fastapi import APIRouter, Depends, Response, HTTPException, Cookie
-from schemas.auth_schema import LoginSchema, ResetPassword
-from core.security import create_access_token, get_current_user, get_password_hash, verify_password
+from app.schemas.auth_schema import LoginSchema, ResetPassword
+from app.core.security import create_access_token, get_current_user, get_password_hash, verify_password
 from jose import jwt
 
-from schemas.users_schema import ForgotPassword
+from app.schemas.users_schema import ForgotPassword
 from sqlalchemy.orm import Session
-from core.db import get_db
-from api.models.models import User
-from logger import logger
+from app.core.db import get_db
+from app.api.models.models import User
+from app.logger import logger
 
 
 settings = get_settings()
 
 router = APIRouter(tags=["Authentication & Authorization"])
+
 
 @router.post("/signin")
 async def login(data: LoginSchema, response: Response, db: Session = Depends(get_db)):
@@ -61,8 +62,10 @@ async def login(data: LoginSchema, response: Response, db: Session = Depends(get
             key="access_token",
             value=token,
             httponly=True,
-            secure=False,  # True in production HTTPS
-            samesite="lax",
+            secure=True,          # Required in production (HTTPS)
+            samesite="none",      # Required for cross-site requests
+            # secure=False,  # True in production HTTPS
+            # samesite="lax", # for local
             max_age=60 * 60 * 24 * 7,
             path="/"
         )
@@ -71,8 +74,10 @@ async def login(data: LoginSchema, response: Response, db: Session = Depends(get
             key="refresh_token",
             value=token,
             httponly=True,
-            secure=False,  # True in production HTTPS
-            samesite="lax",
+            secure=True,          # Required in production (HTTPS)
+            samesite="none",      # Required for cross-site requests
+            # secure=False,  # True in production HTTPS
+            # samesite="lax", # for local
             max_age=60 * 60 * 24 * 7,
             path="/"
         )
@@ -80,6 +85,7 @@ async def login(data: LoginSchema, response: Response, db: Session = Depends(get
     return {
         "message": "Logged in without two factor authentication"
     }
+
 
 @router.post("/verify-email")
 async def verify_email(
@@ -201,6 +207,7 @@ def verify(data: OTPVerifyRequest, response: Response):
 
     return {"message": "Logged in"}
 
+
 @router.post("/forgot-password")
 async def forgot_password(
     data: ForgotPassword,
@@ -225,12 +232,12 @@ async def forgot_password(
         "message": "If an account exists, a reset link has been sent."
     }
 
+
 @router.post("/reset-password")
 async def reset_password(
     data: ResetPassword,
     db: Session = Depends(get_db)
 ):
-    
 
     try:
 
@@ -248,7 +255,6 @@ async def reset_password(
             400,
             "Invalid token"
         )
-
 
     user = (
         db.query(User)
@@ -270,6 +276,7 @@ async def reset_password(
     return {
         "message": "Password updated successfully."
     }
+
 
 @router.post("/consent")
 def save_consent(choice: str, response: Response):
@@ -295,4 +302,3 @@ def get_consent(cookie_consent: str | None = Cookie(default=None)):
     return {
         "consent": cookie_consent
     }
-

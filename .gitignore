@@ -3,6 +3,7 @@
 # dependencies
 /frontend/app/node_modules
 /backend/app/venv
+/backend/venv
 /.pnp
 .pnp.*
 .yarn/*

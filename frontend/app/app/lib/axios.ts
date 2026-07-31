@@ -1,6 +1,8 @@
 import axios from "axios";
 
+// baseURL: "http://localhost:8000", # for local
+
 export const api = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://at-backend-api.vercel.app",
   withCredentials: true,
 });

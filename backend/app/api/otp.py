@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from core.mail_config_setup import conf
+from app.core.mail_config_setup import conf
 import random
 
 

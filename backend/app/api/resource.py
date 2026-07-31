@@ -2,15 +2,15 @@ from typing import List
 
 from sqlmodel import select
 
-from core.config import get_settings
+from app.core.config import get_settings
 from fastapi import APIRouter, Depends, Response, HTTPException, Cookie
-from core.security import get_current_user
-from schemas.resource_schema import ResourceSchema, CreateResourceSchema, UpdateResourceSchema
+from app.core.security import get_current_user
+from app.schemas.resource_schema import ResourceSchema, CreateResourceSchema, UpdateResourceSchema
 from starlette import status
 
 from sqlalchemy.orm import Session
-from core.db import get_db
-from api.models.models import Resource
+from app.core.db import get_db
+from app.api.models.models import Resource
 
 router = APIRouter(tags=["Resource"],
                    dependencies=[Depends(get_current_user)])

@@ -1,8 +1,11 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from api.routes.api_routes import register_routes
+
+from app.api.routes.api_routes import register_routes
 
 
 app = FastAPI(title="A & T Ecommerce Solution API",
@@ -16,22 +19,45 @@ app = FastAPI(title="A & T Ecommerce Solution API",
                   "email": "amar.tauqeer@gmail.com",
               }, swagger_ui_parameters={"syntaxHighlight": {"theme": "obsidian"}})
 
+# local
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=[
+#         "http://localhost:3000",
+#         "http://127.0.0.1"
+#     ],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+# for production
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1"
+        "https://at-shop.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+BASE_DIR = Path(__file__).resolve().parent
 app.mount(
     "/static",
-    StaticFiles(directory="static"),
+    StaticFiles(directory=BASE_DIR / "static"),
     name="static",
 )
+
+# app.mount(
+#     "/static",
+#     StaticFiles(directory="static"),
+#     name="static",
+# )
+
+@app.get("/")
+def health_check():
+    return {"message":"The health check is successfull!"}
 
 
 register_routes(app)

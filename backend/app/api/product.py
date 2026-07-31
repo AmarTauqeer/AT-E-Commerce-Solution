@@ -6,15 +6,15 @@ import uuid
 from datetime import date, datetime
 from sqlmodel import select
 
-from core.config import get_settings
+from app.core.config import get_settings
 from fastapi import APIRouter, Depends, File, Form, Response, HTTPException, Cookie, UploadFile
-from core.security import get_current_user
-from schemas.product_schema import ProductSchema, CreateProductSchema, UpdateProductSchema
+from app.core.security import get_current_user
+from app.schemas.product_schema import ProductSchema, CreateProductSchema, UpdateProductSchema
 from starlette import status
 
 from sqlalchemy.orm import Session
-from core.db import get_db
-from api.models.models import Product
+from app.core.db import get_db
+from app.api.models.models import Product
 
 UPLOAD_DIR = Path() / 'static/uploads/product'
 HOST="http://127.0.0.1:8000"

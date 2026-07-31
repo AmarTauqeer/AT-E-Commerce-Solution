@@ -3,8 +3,8 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlmodel import select
 
-from api.models.models import User
-from core.security import get_password_hash
+from app.api.models.models import User
+from app.core.security import get_password_hash
 
 
 async def create_user_account(data, db):

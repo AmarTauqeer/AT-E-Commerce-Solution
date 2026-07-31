@@ -1,13 +1,13 @@
 from fastapi import FastAPI
-from api.auth import router as auth_router
-from api.category import router as category_router
-from api.product import router as product_router
-from api.role import router as role_router
-from api.user import router as user_router
-from api.user_permission import router as user_permission_router
-from api.order import router as order_router
-from api.order_items import router as order_items_router
-from api.resource import router as resource_router
+from app.api.auth import router as auth_router
+from app.api.category import router as category_router
+from app.api.product import router as product_router
+from app.api.role import router as role_router
+from app.api.user import router as user_router
+from app.api.user_permission import router as user_permission_router
+from app.api.order import router as order_router
+from app.api.order_items import router as order_items_router
+from app.api.resource import router as resource_router
 
 def register_routes(app: FastAPI):
     app.include_router(auth_router, prefix="/auth")

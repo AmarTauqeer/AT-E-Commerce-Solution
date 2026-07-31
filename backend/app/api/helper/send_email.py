@@ -1,6 +1,6 @@
 from fastapi_mail import FastMail, MessageSchema
-from core.mail_config_setup import conf
-from core.security import create_access_token
+from app.core.mail_config_setup import conf
+from app.core.security import create_access_token
 
 
 async def send_email_varification(email: str):

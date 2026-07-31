@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from core.config import get_settings
+from app.core.config import get_settings
 from sqlmodel import SQLModel, Session
 
 settings = get_settings()

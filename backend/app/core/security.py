@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from fastapi.security import APIKeyCookie
 from datetime import timedelta, datetime
 from jose import jwt
-from core.config import get_settings
+from app.core.config import get_settings
 
 
 settings = get_settings()

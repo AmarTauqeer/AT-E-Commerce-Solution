@@ -2,15 +2,15 @@ from typing import List
 
 from sqlmodel import func, select
 
-from core.config import get_settings
+from app.core.config import get_settings
 from fastapi import APIRouter, Depends, Response, HTTPException
-from core.security import get_current_user
-from schemas.orderitems_schema import OrderItemsSchema, CreateOrderItemsSchema, UpdateOrderItemsSchema
+from app.core.security import get_current_user
+from app.schemas.orderitems_schema import OrderItemsSchema, CreateOrderItemsSchema, UpdateOrderItemsSchema
 from starlette import status
 
 from sqlalchemy.orm import Session
-from core.db import get_db
-from api.models.models import OrderItems
+from app.core.db import get_db
+from app.api.models.models import OrderItems
 
 router = APIRouter(tags=["Lineitems"],
                    dependencies=[Depends(get_current_user)])

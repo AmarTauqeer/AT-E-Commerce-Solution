@@ -2,15 +2,15 @@ from typing import List
 
 from sqlmodel import select
 
-from core.config import get_settings
+from app.core.config import get_settings
 from fastapi import APIRouter, Depends, Response, HTTPException, Cookie
-from core.security import get_current_user
-from schemas.role_schema import RoleSchema, CreateRoleSchema, UpdateRoleSchema
+from app.core.security import get_current_user
+from app.schemas.role_schema import RoleSchema, CreateRoleSchema, UpdateRoleSchema
 from starlette import status
 
 from sqlalchemy.orm import Session
-from core.db import get_db
-from api.models.models import Role
+from app.core.db import get_db
+from app.api.models.models import Role
 
 settings = get_settings()
 
