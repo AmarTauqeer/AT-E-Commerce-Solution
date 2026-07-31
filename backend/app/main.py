@@ -35,7 +35,7 @@ app = FastAPI(title="A & T Ecommerce Solution API",
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://at-shop.vercel.app",
+        "https://at-ecommerce-solution.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
