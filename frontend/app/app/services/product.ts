@@ -22,7 +22,11 @@ export async function productAddOrUpdateFormData(formObj: any) {
   if (id == "0") {
 
     try {
-      const response = await api.post("/product/", formObj);
+      const response = await api.post("/product/", formObj,{
+         headers: {
+            "Content-Type": "multipart/form-data",
+        },
+      });
       return await response.data[0]
     } catch (error: any) {
       return await error.response.data

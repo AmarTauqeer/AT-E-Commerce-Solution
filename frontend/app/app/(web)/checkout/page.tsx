@@ -74,7 +74,7 @@ const Checkout = ({ data }: dataProps) => {
             elements,
             clientSecret,
             confirmParams: {
-                return_url: `http://localhost:3000/order-confirm?data=${JSON.stringify(data)}`
+                return_url: `https://at-ecommerce-solution.vercel.app/order-confirm?data=${JSON.stringify(data)}`
             }
         })
 

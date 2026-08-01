@@ -142,9 +142,9 @@ const ProductAddEditForm = (props: AddOrUpdate) => {
             formObj.append('created_at', format(createDate, 'yyyy-MM-dd'))
         }
 
-        formObj.values().forEach(element => {
-            console.log(element)
-        });
+        // formObj.values().forEach(element => {
+        //     console.log(element)
+        // });
 
         const response = await productAddOrUpdateFormData(formObj)
         console.log(response)

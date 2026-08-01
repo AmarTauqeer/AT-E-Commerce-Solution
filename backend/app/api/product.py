@@ -5,10 +5,12 @@ import uuid
 
 from datetime import date, datetime
 from sqlmodel import select
+import supabase
 
 from app.core.config import get_settings
 from fastapi import APIRouter, Depends, File, Form, Response, HTTPException, Cookie, UploadFile
 from app.core.security import get_current_user
+from app.core.upload import upload_product_image
 from app.schemas.product_schema import ProductSchema, CreateProductSchema, UpdateProductSchema
 from starlette import status
 
@@ -16,8 +18,11 @@ from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.api.models.models import Product
 
-UPLOAD_DIR = Path() / 'static/uploads/product'
-HOST="http://127.0.0.1:8000"
+# UPLOAD_DIR = Path() / 'static/uploads/product'
+# HOST="http://127.0.0.1:8000"    #local
+
+UPLOAD_DIR = Path() / 'static/uploads/product'  #production
+HOST="https://at-backend-api.vercel.app"    #production
 
 router = APIRouter(tags=["Product"],
                    dependencies=[Depends(get_current_user)])
@@ -36,19 +41,9 @@ async def product_sent(product_name:str=Form(...),
                        created_at:Optional[date] = Form(...), 
                        file_upload: UploadFile|None=File(None), db:Session = Depends(get_db)):
     image_path=""
-
+    
     if file_upload:
-        data = await file_upload.read()
-
-        unique_name = f"{uuid.uuid4()}_{file_upload.filename}"
-        print(unique_name)
-        save_to = UPLOAD_DIR / unique_name
-
-        with open(save_to, 'wb') as f:
-            f.write(data)
-        
-
-        image_path = f"{HOST}/static/uploads/product/{unique_name}"
+        image_path = await upload_product_image(file_upload)
 
     if image_path!="":
         product = Product(
@@ -67,18 +62,63 @@ async def product_sent(product_name:str=Form(...),
         return [product]
     else:
         product = Product(
-            category_id=category_id,
-            product_name=product_name,
-            product_description=product_description,
-            sale_price=sale_price,
-            created_at=created_at
-            )
-
+                category_id=category_id,
+                product_name=product_name,
+                product_description=product_description,
+                sale_price=sale_price,
+                created_at=created_at
+                )
+    
         db.add(product)
         db.commit()
         db.refresh(product)
 
         return [product]
+
+        
+
+    # if file_upload:
+    #     data = await file_upload.read()
+
+    #     unique_name = f"{uuid.uuid4()}_{file_upload.filename}"
+    #     print(unique_name)
+    #     save_to = UPLOAD_DIR / unique_name
+
+    #     with open(save_to, 'wb') as f:
+    #         f.write(data)
+        
+
+    #     image_path = f"{HOST}/static/uploads/product/{unique_name}"
+
+    # if image_path!="":
+    #     product = Product(
+    #         category_id=category_id,
+    #         product_name=product_name,
+    #         product_description=product_description,
+    #         image_path=image_path,
+    #         sale_price=sale_price,
+    #         created_at=created_at
+    #         )
+
+    #     db.add(product)
+    #     db.commit()
+    #     db.refresh(product)
+
+    #     return [product]
+    # else:
+    #     product = Product(
+    #         category_id=category_id,
+    #         product_name=product_name,
+    #         product_description=product_description,
+    #         sale_price=sale_price,
+    #         created_at=created_at
+    #         )
+
+    #     db.add(product)
+    #     db.commit()
+    #     db.refresh(product)
+
+    #     return [product]
 
 
 
@@ -98,38 +138,46 @@ async def update_product(product_name:str=Form(...),
 
     image_path = db.query(Product.image_path).filter(Product.id == id).scalar()
     image_path_for_update=image_path
+    # local
 
-    if file_upload!=None:
-        if(image_path!=None):
-            file_name = image_path[45:]
-            # print(f"{file_name} from db and file name from upload= {file_upload.filename}")
-            rootDir ="static/uploads/product"
-            for relPath,dir, files in os.walk(rootDir):
-                fullPath = os.path.join(relPath, file_name)
-                # print(files)
-                if(file_name in files):
-                    os.remove(fullPath)
+    # if file_upload!=None:
+    #     if(image_path!=None):
+    #         file_name = image_path[45:]
+    #         rootDir ="static/uploads/product"
+    #         for relPath,dir, files in os.walk(rootDir):
+    #             fullPath = os.path.join(relPath, file_name)
+    #             if(file_name in files):
+    #                 os.remove(fullPath)
                     
-            data = await file_upload.read()
+    #         data = await file_upload.read()
 
-            unique_name = f"{uuid.uuid4()}_{file_upload.filename}"
-            print(unique_name)
-            save_to = UPLOAD_DIR / unique_name
+    #         unique_name = f"{uuid.uuid4()}_{file_upload.filename}"
+    #         print(unique_name)
+    #         save_to = UPLOAD_DIR / unique_name
 
-            with open(save_to, 'wb') as f:
-                f.write(data)
-            image_path_for_update = f"{HOST}/static/uploads/product/{unique_name}"
-        else:
-            data = await file_upload.read()
+    #         with open(save_to, 'wb') as f:
+    #             f.write(data)
+    #         image_path_for_update = f"{HOST}/static/uploads/product/{unique_name}"
+    #     else:
+    #         data = await file_upload.read()
 
-            unique_name = f"{uuid.uuid4()}_{file_upload.filename}"
-            print(unique_name)
-            save_to = UPLOAD_DIR / unique_name
+    #         unique_name = f"{uuid.uuid4()}_{file_upload.filename}"
+    #         print(unique_name)
+    #         save_to = UPLOAD_DIR / unique_name
 
-            with open(save_to, 'wb') as f:
-                f.write(data)
-            image_path_for_update = f"{HOST}/static/uploads/product/{unique_name}"
-        
+    #         with open(save_to, 'wb') as f:
+    #             f.write(data)
+    #         image_path_for_update = f"{HOST}/static/uploads/product/{unique_name}"
+
+
+
+    # production
+    # new image
+    
+    if file_upload!=None:
+        new_image_url = await upload_product_image(file_upload)
+        image_path_for_update = new_image_url
+
 
     updated_product.category_id=category_id,
     updated_product.product_name=product_name,
@@ -141,6 +189,11 @@ async def update_product(product_name:str=Form(...),
 
     db.commit()
     db.refresh(updated_product)
+
+    if image_path:
+        filename = image_path.split("/")[-1]
+        supabase.storage.from_("products").remove([filename])
+
     return  updated_product
    
 
