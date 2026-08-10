@@ -11,6 +11,9 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
+MAX_LOGIN_ATTEMPTS = 5
+LOCKOUT_MINUTES = 15
+
 # shows lock icon in swagger
 cookie_scheme = APIKeyCookie(
     name="access_token",

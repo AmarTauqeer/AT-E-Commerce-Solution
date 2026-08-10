@@ -1,18 +1,23 @@
+
 from app.api.helper.send_email import send_reset_email
 from fastapi.security import APIKeyCookie
 from pydantic import BaseModel, EmailStr
+from datetime import datetime, timedelta
 
+from app.api.login_history import record_logout
 from app.api.otp import send_otp_email, verify_otp
 from app.core.config import get_settings
-from fastapi import APIRouter, Depends, Response, HTTPException, Cookie
+from fastapi import APIRouter, Depends, Request, Response, HTTPException, Cookie
 from app.schemas.auth_schema import LoginSchema, ResetPassword
-from app.core.security import create_access_token, get_current_user, get_password_hash, verify_password
+from app.schemas.login_history_schema import CreateLoginHistoryRequest
+from app.core.security import LOCKOUT_MINUTES, MAX_LOGIN_ATTEMPTS, create_access_token, get_current_user, get_password_hash, verify_password
 from jose import jwt
 
+from app.schemas.login_history_schema import CreateLoginHistoryRequest
 from app.schemas.users_schema import ForgotPassword
 from sqlalchemy.orm import Session
 from app.core.db import get_db
-from app.api.models.models import User
+from app.api.models.models import User, LoginHistory
 from app.logger import logger
 
 
@@ -22,22 +27,23 @@ router = APIRouter(tags=["Authentication & Authorization"])
 
 
 @router.post("/signin")
-async def login(data: LoginSchema, response: Response, db: Session = Depends(get_db)):
+async def login(request: Request, data: LoginSchema, response: Response, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(
         User.email == data.username, User.role_id == data.role).first()
-    # print(user)
 
     if not user:
-        return HTTPException(
-            status_code=401, detail="user doesn't exist")
+        raise HTTPException(
+            status_code=401, detail="Invalid email or password")
+
+    check_account_lock(user)
 
     if not user.is_active:
-        return HTTPException(
+        raise HTTPException(
             status_code=401, detail="user is not active")
 
     if not user.is_verified:
-        return HTTPException(
+        raise HTTPException(
             status_code=401, detail="user is not verified")
 
     is_valid = verify_password(
@@ -46,10 +52,56 @@ async def login(data: LoginSchema, response: Response, db: Session = Depends(get
     )
 
     if not is_valid:
-        return HTTPException(
-            status_code=401,
-            detail="Invalid email or password"
+        ip_address = (
+            request.client.host
+            if request.client
+            else None
         )
+        record_failed_login(
+            db=db,
+            user=user,
+            ip_address=ip_address,
+            reason="Invalid password",
+        )
+
+        if user.failed_login_attempts >= MAX_LOGIN_ATTEMPTS:
+            raise HTTPException(
+                status_code=423,
+                detail=(
+                    "Too many failed login attempts. "
+                    "Account temporarily locked."
+                ),
+            )
+
+        remaining = (
+            MAX_LOGIN_ATTEMPTS
+            - user.failed_login_attempts
+        )
+
+        raise HTTPException(
+            status_code=401,
+            detail=(
+                f"Invalid email or password. "
+                f"{remaining} attempts remaining."
+            ),
+        )
+
+    history = CreateLoginHistoryRequest(
+        user_id=user.id,
+        ip_address=(
+            request.client.host
+            if request.client
+            else None
+        ),
+    )
+
+    create_login_history(
+        db=db,
+        data=history,
+    )
+     # Successful login
+    user.failed_login_attempts = 0
+    user.locked_until = None
 
     token = create_access_token({
         "sub": data.username
@@ -57,15 +109,19 @@ async def login(data: LoginSchema, response: Response, db: Session = Depends(get
 
     # check role for admin
     if user.role_id == 2:
+        # save the record
+        db.add(user)
+        db.commit()
+        db.refresh(user)
 
         response.set_cookie(
             key="access_token",
             value=token,
             httponly=True,
-            secure=True,          # Required in production (HTTPS)
-            samesite="none",      # Required for cross-site requests
-            # secure=False,  # True in production HTTPS
-            # samesite="lax", # for local
+            # secure=True,          # Required in production (HTTPS)
+            # samesite="none",      # Required for cross-site requests
+            secure=False,  # True in production HTTPS
+            samesite="lax",  # for local
             max_age=60 * 60 * 24 * 7,
             path="/"
         )
@@ -74,10 +130,10 @@ async def login(data: LoginSchema, response: Response, db: Session = Depends(get
             key="refresh_token",
             value=token,
             httponly=True,
-            secure=True,          # Required in production (HTTPS)
-            samesite="none",      # Required for cross-site requests
-            # secure=False,  # True in production HTTPS
-            # samesite="lax", # for local
+            # secure=True,          # Required in production (HTTPS)
+            # samesite="none",      # Required for cross-site requests
+            secure=False,  # True in production HTTPS
+            samesite="lax",  # for local
             max_age=60 * 60 * 24 * 7,
             path="/"
         )
@@ -140,7 +196,12 @@ async def get_me(user=Depends(get_current_user)):
 
 
 @router.post("/logout")
-async def logout(response: Response):
+async def logout(response: Response, db: Session = Depends(get_db), user=Depends(get_current_user)):
+
+    record_logout(
+        db=db,
+        email=user['sub'],
+    )
 
     response.delete_cookie(
         key="access_token",
@@ -302,3 +363,80 @@ def get_consent(cookie_consent: str | None = Cookie(default=None)):
     return {
         "consent": cookie_consent
     }
+
+
+def create_login_history(
+    db: Session,
+    data: CreateLoginHistoryRequest,
+) -> LoginHistory:
+
+    history = LoginHistory(
+        user_id=data.user_id,
+        login_at=datetime.now(),
+        ip_address=data.ip_address,
+        failure_reason=data.failure_reason,
+    )
+
+    db.add(history)
+    db.commit()
+    db.refresh(history)
+
+    return history
+
+
+def check_account_lock(user):
+    if (
+        user.locked_until
+        and user.locked_until > datetime.now()
+    ):
+        remaining = (
+            user.locked_until - datetime.now()
+        )
+
+        minutes = max(
+            1,
+            int(remaining.total_seconds() / 60)
+        )
+
+        raise HTTPException(
+            status_code=423,
+            detail=(
+                f"Account temporarily locked. "
+                f"Try again in {minutes} minutes."
+            ),
+        )
+
+    # Lockout has expired
+    if user.locked_until:
+        user.locked_until = None
+        user.failed_login_attempts = 0
+
+
+def record_failed_login(
+    db: Session,
+    user: User,
+    ip_address: str | None,
+    reason: str,
+):
+    user.failed_login_attempts = (
+        user.failed_login_attempts or 0
+    ) + 1
+
+    if user.failed_login_attempts >= MAX_LOGIN_ATTEMPTS:
+        user.locked_until = (
+            datetime.now()
+            + timedelta(minutes=LOCKOUT_MINUTES)
+        )
+
+    history = LoginHistory(
+        user_id=user.id,
+        ip_address=ip_address,
+        success=False,
+        failure_reason=reason,
+    )
+
+    db.add(user)
+    db.add(history)
+    db.commit()
+    db.refresh(user)
+    db.refresh(history)

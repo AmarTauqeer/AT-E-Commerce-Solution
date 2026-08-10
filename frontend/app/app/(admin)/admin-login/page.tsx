@@ -12,7 +12,7 @@ const AdminLogin = () => {
     useEffect(() => {
         const getloginStatus = async () => {
             const loginStatus = await loggedIn();
-            console.log(loginStatus)
+            // console.log(loginStatus)
         }
         getloginStatus()
     })

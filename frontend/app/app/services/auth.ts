@@ -5,8 +5,12 @@ export async function loginUser(data: {
   password: string;
   role: number;
 }) {
-  const response = await api.post("/auth/signin", data);
-  return response.data;
+  try {
+    const response = await api.post("/auth/signin", data);
+    return await response.data
+  } catch (error: any) {
+    return await error.response.data
+  }
 }
 
 export async function getUser() {

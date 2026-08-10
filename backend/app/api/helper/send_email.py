@@ -10,7 +10,7 @@ async def send_email_varification(email: str):
     })
 
     verification_url = (
-    f"http://localhost:3000"
+    f"https://at-ecommerce-solution.vercel.app"
     f"/verify-email?token={token}"
 )
 
@@ -42,7 +42,7 @@ async def send_reset_email(email: str):
     })
 
     reset_password_url = (
-    f"http://localhost:3000"
+    f"https://at-ecommerce-solution.vercel.app"
     f"/reset-password?token={token}"
 )
 

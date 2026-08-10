@@ -20,8 +20,8 @@ const LoginForm = () => {
     const form = useForm<z.infer<typeof LoginFormSchema>>({
         resolver: zodResolver(LoginFormSchema),
         defaultValues: {
-            username: "amar.tauqeer@gmail.com",
-            password: "amar",
+            username: "test@test.com",
+            password: "test",
             role: "2",
         },
     })
@@ -40,9 +40,8 @@ const LoginForm = () => {
             role: parseInt(data.role)
         }
         const response = await loginUser(jsonData)
-        // console.log(response)
         
-        if (response.status_code !== undefined && response.status_code == 401) {
+        if (await response.detail) {
             toast.error(<span className="text-red-500">{response.detail}</span>)
             setLoading(false)
             return false

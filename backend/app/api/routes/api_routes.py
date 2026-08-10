@@ -8,6 +8,7 @@ from app.api.user_permission import router as user_permission_router
 from app.api.order import router as order_router
 from app.api.order_items import router as order_items_router
 from app.api.resource import router as resource_router
+from app.api.login_history import router as login_history_router
 
 def register_routes(app: FastAPI):
     app.include_router(auth_router, prefix="/auth")
@@ -19,3 +20,4 @@ def register_routes(app: FastAPI):
     app.include_router(order_router, prefix="/order")
     app.include_router(order_items_router, prefix="/orderItems")
     app.include_router(resource_router, prefix="/resource")
+    app.include_router(login_history_router, prefix="/login_history")

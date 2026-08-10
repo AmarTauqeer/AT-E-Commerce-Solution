@@ -1,5 +1,4 @@
 from pydantic import EmailStr
-from sqlalchemy.orm import relationship
 from typing import List, Optional
 from datetime import datetime
 from sqlmodel import Relationship, SQLModel, Field
@@ -64,8 +63,38 @@ class UserPermission(SQLModel, table=True):
     userPermission: list["User"] = Relationship(
         back_populates="userPermission")
 
+class LoginHistory(SQLModel, table=True):
+    __tablename__ ="loginhistory"
+
+    id:  Optional[int] = Field(primary_key=True, index=True)
+    user_id: int | None = Field(default=None, foreign_key="user.id")
+    login_at: datetime = Field(default_factory=lambda:datetime.now(),nullable=True)
+    login_out: datetime = Field(default=None, nullable=True)
+    ip_address: str | None = Field(
+        default=None,
+        max_length=100,
+        nullable=True,
+    )
+
+    failure_reason: str | None = Field(
+        default=None,
+        max_length=300,
+        nullable=True,
+    )
+
+    user: Optional["User"] = Relationship(
+        back_populates="login_history"
+    )
+    success: bool = Field(
+        default=True,
+        nullable=False,
+    )
+    
+
+
 
 class User(SQLModel, table=True):
+    __tablename__="user"
 
     id:  Optional[int] = Field(primary_key=True, index=True)
     role_id: int | None = Field(default=None, foreign_key="role.id")
@@ -87,14 +116,25 @@ class User(SQLModel, table=True):
     created_at: datetime = Field(
         default_factory=datetime.now(),
     )
-    # role = relationship("Role", back_populates="user")
+    failed_login_attempts: int = Field(
+            default=0,
+            nullable=True,
+    )
+    
+    locked_until: datetime | None = Field(
+            default=None,
+            nullable=True,
+    )
 
     role: Optional[Role] = Relationship(back_populates="roles")
     userPermission: Optional[List[UserPermission]] = Relationship(
         back_populates="userPermission")
+    login_history: list["LoginHistory"] = Relationship(back_populates="user", cascade_delete=True,)
 
 
 class Order(SQLModel, table=True):
+    __tablename__ = "order"
+
     id: Optional[int] = Field(primary_key=True, index=True)
     user_id: int | None = Field(default=None, foreign_key="user.id")
     order_amount: int | None = Field(default=None)
@@ -110,6 +150,8 @@ class Order(SQLModel, table=True):
 
 
 class OrderItems(SQLModel, table=True):
+    __tablename__ = "orderitems"
+
     id: Optional[int] = Field(primary_key=True, index=True)
     order_id: int | None = Field(default=None, foreign_key="order.id")
     product_id: int | None = Field(default=None, foreign_key="product.id")
@@ -125,6 +167,7 @@ class OrderItems(SQLModel, table=True):
 
 
 class Resource(SQLModel, table=True):
+    __tablename__ = "resource"
     # forms and reports
 
     id: Optional[int] = Field(primary_key=True, index=True)

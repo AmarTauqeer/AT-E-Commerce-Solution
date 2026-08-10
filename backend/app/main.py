@@ -30,8 +30,9 @@ app = FastAPI(title="A & T Ecommerce Solution API",
 #     allow_methods=["*"],
 #     allow_headers=["*"],
 # )
-# for production
 
+
+# for production
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -43,6 +44,7 @@ app.add_middleware(
 )
 
 BASE_DIR = Path(__file__).resolve().parent
+
 app.mount(
     "/static",
     StaticFiles(directory=BASE_DIR / "static"),
@@ -50,7 +52,7 @@ app.mount(
 )
 
 # app.mount(
-#     "/static",
+#     "/app/static",
 #     StaticFiles(directory="static"),
 #     name="static",
 # )
