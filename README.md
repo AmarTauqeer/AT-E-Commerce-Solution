@@ -23,7 +23,7 @@
 
 This is a [FastAPI](https://fastapi.tiangolo.com/), [Next.js](https://nextjs.org/) , [React.js](https://nextjs.org/), [PostgreSQL](https://www.postgresql.org/), [Shadcn](https://ui.shadcn.com/), and [Tailwind.css](https://tailwindui.com/) E-commerce application.
 
-
+## Live Demo [Live](https://at-ecommerce-solution.vercel.app/user-login)
 
 
 
@@ -36,17 +36,19 @@ This is a [FastAPI](https://fastapi.tiangolo.com/), [Next.js](https://nextjs.org
 * Facilitate with user permissions to resources such as customer orders, products, etc,.
 * Provides the output in the form of reports such as list of categories, list of products, customers orders (single and in between dates)
 * API documentation using swagger
+* Deployed on Vercel both frontend and backend
 
 ## Technology and Tools:
 
 * FastAPI, Pydantic models, PostgreSQL, alembic, Stripe Payment Gateway.
 * NextJs 16.1.7., React 19.2.4, radix-ui 1.4.3, recharts 3.8.0, Zod 4.4.3, React-DOM 19.2.4, React PDF, React-Hook-Forms 7.75.0, and React-Icons 5.6, Axios.
-* Tailwind CSS, Shadcn.
+* Tailwind CSS, Shadcn UI.
 * NodeJs and NPM.
 * VS Code
-* PgAdmin
+* PgAdmin4
 
 
+## [Video](https://1drv.ms/f/c/7e2cd935019f4cd8/IgB9b0a5h8mORIx9WCdbPsTYAddOw8g61v7wk845kG2BSwE?e=hNUung)
 
 
 
@@ -56,7 +58,7 @@ This is a [FastAPI](https://fastapi.tiangolo.com/), [Next.js](https://nextjs.org
 
 ## Contributor
 
-Amar Tauqeer amar.tauqeer@gmail.com, amar.tauqeer@wur.nl
+Amar Tauqeer amar.tauqeer@gmail.com, amar.tauqeer@hotmail.com
 
 ## 
 

@@ -118,10 +118,10 @@ async def login(request: Request, data: LoginSchema, response: Response, db: Ses
             key="access_token",
             value=token,
             httponly=True,
-            # secure=True,          # Required in production (HTTPS)
-            # samesite="none",      # Required for cross-site requests
-            secure=False,  # True in production HTTPS
-            samesite="lax",  # for local
+            secure=True,          # Required in production (HTTPS)
+            samesite="none",      # Required for cross-site requests
+            # secure=False,  # True in production HTTPS
+            # samesite="lax",  # for local
             max_age=60 * 60 * 24 * 7,
             path="/"
         )
@@ -130,10 +130,10 @@ async def login(request: Request, data: LoginSchema, response: Response, db: Ses
             key="refresh_token",
             value=token,
             httponly=True,
-            # secure=True,          # Required in production (HTTPS)
-            # samesite="none",      # Required for cross-site requests
-            secure=False,  # True in production HTTPS
-            samesite="lax",  # for local
+            secure=True,          # Required in production (HTTPS)
+            samesite="none",      # Required for cross-site requests
+            # secure=False,  # True in production HTTPS
+            # samesite="lax",  # for local
             max_age=60 * 60 * 24 * 7,
             path="/"
         )
@@ -250,8 +250,10 @@ def verify(data: OTPVerifyRequest, response: Response):
         key="access_token",
         value=token,
         httponly=True,
-        secure=False,  # True in production HTTPS
-        samesite="lax",
+        secure=True,          # Required in production (HTTPS)
+        samesite="none",      # Required for cross-site requests
+        # secure=False,  # True in production HTTPS
+        # samesite="lax",  # for local
         max_age=60 * 60 * 24 * 7,
         path="/"
     )
@@ -260,8 +262,10 @@ def verify(data: OTPVerifyRequest, response: Response):
         key="refresh_token",
         value=token,
         httponly=True,
-        secure=False,  # True in production HTTPS
-        samesite="lax",
+        secure=True,          # Required in production (HTTPS)
+        samesite="none",      # Required for cross-site requests
+        # secure=False,  # True in production HTTPS
+        # samesite="lax",  # for local
         max_age=60 * 60 * 24 * 7,
         path="/"
     )

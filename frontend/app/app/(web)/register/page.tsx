@@ -54,10 +54,10 @@ const Register = () => {
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
-            username: "amar",
-            password: "amar",
-            email: "amar.tauqeer@hotmail.com",
-            passwordConfirm:"amar",
+            username: "test",
+            password: "test",
+            email: "test@test.com",
+            passwordConfirm:"test",
                 },
     })
 
