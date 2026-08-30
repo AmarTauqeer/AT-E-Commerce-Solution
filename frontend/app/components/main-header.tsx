@@ -26,21 +26,26 @@ const MainHeader = () => {
     }, []);
     return (
         <>
-        <nav className={`fixed w-full transition-colors duration-300 z-50 ${isScrolled ? "backdrop-blur-md shadow-sm" : "bg-transparent"
-            }`}>
-            <div className="flex justify-center items-center w-full bg-card">
-                <div className="flex items-center justify-between md:w-2/3">
-                    <div className="w-auto md:w-1/3 flex items-center gap-2 justify-start">
-                        <MobileMenu />
-                        <Logo />
-                    </div>
-                    {pathname!=="/user-logout" && <MenuBar />}
-                    <NavbarWebsite />
+            <nav className={`fixed w-full transition-colors duration-300 z-50 ${isScrolled ? "backdrop-blur-md shadow-sm" : "bg-transparent"
+                }`}>
+                <div className="flex justify-center items-center w-full bg-card">
+                    <div className="flex items-center justify-between md:w-2/3 mb-1">
+                        <div className="w-auto md:w-1/3 flex items-center gap-2 justify-start">
+                            <MobileMenu />
+                            <Logo />
+                        </div>
+                        
+                            {pathname !== "/user-logout" && <MenuBar />}
+                            
+                        
+                        <NavbarWebsite />
 
+
+
+                    </div>
                 </div>
-            </div>
-            <Separator className="border border-acent" />
-        </nav>
+                <Separator className="border border-acent" />
+            </nav>
         </>
     )
 }

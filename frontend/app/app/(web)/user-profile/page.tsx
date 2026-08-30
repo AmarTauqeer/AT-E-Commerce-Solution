@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input"
 import { redirect, useRouter } from "next/navigation"
 import { getUser, getUserAndPermissions, getUsers, loggedIn, userAddOrUpdateFormData } from "@/app/services/auth"
 import { getPermission } from "@/app/services/user-permissions"
+import { motion } from "motion/react"
 
 
 export type ProfileType = {
@@ -153,7 +154,7 @@ const UserProfile = () => {
 
     return (
         <>
-            <div className="max-w-sm mx-auto py-5">
+            <div className="max-w-3xl mx-auto py-10">
                 <Card>
                     <CardHeader>
                         <CardTitle>Profile</CardTitle>
@@ -163,69 +164,74 @@ const UserProfile = () => {
                     <CardContent>
                         <Suspense fallback={<div>loading...</div>}>
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(handleSubmit)} className="pt-5 py-1">
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="px-2 mt-2">Email</FormLabel>
-                                                <FormControl>
-                                                    <Input type="text" placeholder="email" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="first_name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="px-2 mt-2">First Name</FormLabel>
-                                                <FormControl>
-                                                    <Input type="text" placeholder="First name" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="last_name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="px-2 mt-2">Last Name</FormLabel>
-                                                <FormControl>
-                                                    <Input type="text" placeholder="Last name" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="password"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="px-2 mt-2">Password</FormLabel>
-                                                <FormControl>
-                                                    <Input type="password" placeholder="password" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <div className="flex flex-row items-center mt-2">
-                                        <Button type="submit" disabled={loading} className="basis-1/2 mr-0.5">
-                                            {loading && <><Loader2Icon className="animate-spin" /> Please wait</>}
-                                            {!loading && <p>Update</p>}
-                                        </Button>
-                                        <Button className="basis-1/2 ml-0.5" type="button" onClick={() => redirect("/about")}>Cancel</Button>
 
+                                <motion.form initial={{ x: -30, opacity: 0 }}
+                                    whileInView={{ x: 0, opacity: 1 }}
+                                    transition={{ duration: 0.8, delay: 0.2 }} onSubmit={form.handleSubmit(handleSubmit)} className="pt-5 py-1">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 py-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="email"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="px-2 mt-2">Email</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="text" placeholder="email" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="first_name"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="px-2 mt-2">First Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="text" placeholder="First name" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="last_name"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="px-2 mt-2">Last Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="text" placeholder="Last name" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="password"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="px-2 mt-2">Password</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="password" placeholder="password" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <div className="flex flex-row items-center mt-2">
+                                            <Button type="submit" disabled={loading} className="basis-1/2 mr-0.5">
+                                                {loading && <><Loader2Icon className="animate-spin" /> Please wait</>}
+                                                {!loading && <p>Update</p>}
+                                            </Button>
+                                            <Button className="basis-1/2 ml-0.5" type="button" onClick={() => redirect("/about")}>Cancel</Button>
+
+                                        </div>
                                     </div>
+                                </motion.form>
 
-                                </form>
                             </Form>
                         </Suspense>
 

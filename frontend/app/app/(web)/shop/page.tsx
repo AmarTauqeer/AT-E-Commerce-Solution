@@ -6,7 +6,6 @@ const Shop = async () => {
 
   return (
     <div>
-      <h3 className="text-xl font-bold mb-2 px-2 mt-2">Shop</h3>
       <Suspense fallback={<FetchingDataSkeleton />}>
         <SuspendedData />
       </Suspense>

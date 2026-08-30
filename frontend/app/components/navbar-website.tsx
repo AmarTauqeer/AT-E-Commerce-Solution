@@ -18,6 +18,7 @@ import SearchBar from '@/app/(web)/searchbar.tsx/page'
 import CartIcon from '@/app/(web)/cart-icon/page'
 import FavoriteIcon from '@/app/(web)/favorite-icon/page'
 import { getUser } from '@/app/services/auth'
+import { motion } from 'motion/react'
 
 
 const NavbarWebsite = () => {
@@ -26,10 +27,10 @@ const NavbarWebsite = () => {
   const { theme, setTheme } = useTheme()
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const[currUser, setCurrUser]=useState("")
+  const [currUser, setCurrUser] = useState("")
 
   const [isScrolled, setIsScrolled] = React.useState(false);
-  
+
   function handleClick() {
     router.push('/shoping-cart')
   }
@@ -60,7 +61,9 @@ const NavbarWebsite = () => {
 
   return (
     <>
-      <div className='flex items-center gap-3 mt-4'>
+      <motion.div initial={{ x: -30, opacity: 0 }}
+        whileInView={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }} className='flex items-center gap-3 mt-4'>
 
         {isAuthenticated && <>
           <SearchBar />
@@ -121,7 +124,7 @@ const NavbarWebsite = () => {
           <Link href="/user-login">Login</Link>
         </Button>}
 
-      </div>
+      </motion.div>
     </>
   )
 }

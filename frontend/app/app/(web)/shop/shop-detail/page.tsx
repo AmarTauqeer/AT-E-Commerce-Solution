@@ -8,6 +8,7 @@ import Image from "next/image"
 import { redirect, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
+import { motion } from 'motion/react'
 
 // import ReactImageMagnify from 'react-image-magnify';
 
@@ -69,10 +70,14 @@ const ProductDetail = () => {
 
     return (
         <>
-            <div>
+            <motion.div initial={{ y: -20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}>
                 <h3 className="px-2 text-2xl font-bold mb-2 mt-2">Product Detail</h3>
-            </div>
-            <div className="px-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+            </motion.div>
+            <motion.div initial={{ y: -20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }} className="px-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
                 <div className="p-5">
                     <h2 className="text-2xl font-bold mb-2">{category_name}</h2>
                     <h3 className='text-xl font-semibold'>{product_name}</h3>
@@ -82,25 +87,31 @@ const ProductDetail = () => {
                     <div className='text-lg font-bold mb-3 flex flex-row items-center'>
                         <Euro />{sale_price.toFixed(2)}
                     </div>
-                    <Button
-                        className='w-[30%] py-1'
-                        onClick={() => handleClick()}
-                    >
-                        Add to Cart
-                    </Button>
-                </div>
 
-                <div className="relative h-full w-full overflow-hidden rounded-lg border">
-                    <Image
-                        src={image_path || ""}
-                        alt={product_name || ""}
-                        width={700}
-                        height={400}
-                        className="object-cover transition-transform duration-500 ease-in-out hover:scale-125"
-                        unoptimized
-                    />
-                </div>
-            </div>
+
+
+                    <motion.div initial={{ y: 30, opacity: 0 }}
+                        whileInView={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}>
+                        <Button
+                            className='w-[30%] py-1'
+                            onClick={() => handleClick()}
+                        >
+                            Add to Cart
+                        </Button>
+                    </motion.div>
+                    </div>
+                    <div className="relative h-full w-full overflow-hidden rounded-lg border">
+                        <Image
+                            src={image_path || ""}
+                            alt={product_name || ""}
+                            width={700}
+                            height={400}
+                            className="object-cover transition-transform duration-500 ease-in-out hover:scale-125"
+                            unoptimized
+                        />
+                    </div>
+            </motion.div>
 
         </>
     )
